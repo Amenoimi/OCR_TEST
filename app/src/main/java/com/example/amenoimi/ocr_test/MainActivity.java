@@ -8,7 +8,7 @@ import android.view.View;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 public class MainActivity extends AppCompatActivity {
-    static final String TESSBASE_PATH = "/storage/emulated/0/download/tesseract/";
+    static final String TESSBASE_PATH = "";
     static final String DEFAULT_LANGUAGE = "eng";
     static final String CHINESE_LANGUAGE = "chi_tra";
     private View imgSrc;
