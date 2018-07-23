@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">OCR_TEST</string>
+
+    <string-array name="lunch">
+        <item>繁(正)體中文</item>
+        <item>簡體中文</item>
+        <item>英文(English)</item>
+
+    </string-array>
 </resources>

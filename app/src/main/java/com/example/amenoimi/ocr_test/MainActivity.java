@@ -15,8 +15,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public Button b1,b2;
     public static final int progressType = 0;
     private ProgressDialog progressDialog;
+    public int ImgToTextMode=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +63,22 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         b2=(Button)findViewById(R.id.b2);
         b1.setOnClickListener(this);
         b2.setOnClickListener(this);
+        Spinner spinner = (Spinner)findViewById(R.id.sp);
+        ArrayAdapter<CharSequence> lunchList = ArrayAdapter.createFromResource(MainActivity.this,
+                R.array.lunch,
+                android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(lunchList);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ImgToTextMode=position;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         try {
             TESSBASE_PATH =getDataDir(getApplicationContext());
@@ -167,7 +187,18 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         final Bitmap bitmap = imgSrc.getDrawingCache();
         final TessBaseAPI ocrApi = new TessBaseAPI();
 
-        ocrApi.init(TESSBASE_PATH, CHINESE_LANGUAGE);
+        switch (ImgToTextMode){
+            case 0:
+                ocrApi.init(TESSBASE_PATH, CHINESE_LANGUAGE);
+                break;
+            case 1:
+                ocrApi.init(TESSBASE_PATH, CHINESE_LANGUAGE_SIM);
+                break;
+            case 2:
+                ocrApi.init(TESSBASE_PATH,DEFAULT_LANGUAGE );
+                break;
+        }
+
         ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
 
         ocrApi.setImage(bitmap);
