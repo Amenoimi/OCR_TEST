@@ -1,11 +1,14 @@
 package com.example.amenoimi.ocr_test;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -18,9 +21,18 @@ import android.widget.TextView;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOError;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Calendar;
 
 import static android.os.Environment.getDataDirectory;
@@ -34,6 +46,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private ImageView imgSrc;
     public TextView t1;
     public Button b1,b2;
+    public static final int progressType = 0;
     private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,4 +166,127 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         return  resString;
     }
 
+
+    public void myDownload() throws Exception {
+        try {
+            String path = getDataDir(getApplicationContext());
+            path += "/myTest.png";
+            new DownloadFromURL().execute("https://shop0.asutora.com/assets/title.png", path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String getDataDir(Context context) throws Exception {
+        return context.getPackageManager()
+                .getPackageInfo(context.getPackageName(), 0)
+                .applicationInfo.dataDir;
+    }
+
+    private void writeToFile(File fout, String data) {
+        FileOutputStream osw = null;
+        try {
+            osw = new FileOutputStream(fout);
+            osw.write(data.getBytes());
+            osw.flush();
+        } catch (Exception e) {
+            ;
+        } finally {
+            try {
+                osw.close();
+            } catch (Exception e) {
+                ;
+            }
+        }
+    }
+    private String readFromFile(File fin) {
+        StringBuilder data = new StringBuilder();
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(fin), "utf-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                data.append(line);
+            }
+        } catch (Exception e) {
+            ;
+        } finally {
+            try {
+                reader.close();
+            } catch (Exception e) {
+                ;
+            }
+        }
+        return data.toString();
+    }
+
+    class DownloadFromURL extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showDialog(progressType);
+        }
+
+        @Override
+        protected String doInBackground(String... fileUrl) {
+            int count;
+            try {
+                URL url = new URL(fileUrl[0]);
+                URLConnection urlConnection = url.openConnection();
+                urlConnection.connect();
+                // show progress bar 0-100%
+                int fileLength = urlConnection.getContentLength();
+                InputStream inputStream = new BufferedInputStream(url.openStream(), 8192);
+                OutputStream outputStream = new FileOutputStream(fileUrl[1]);
+
+                byte data[] = new byte[1024];
+                long total = 0;
+                while ((count = inputStream.read(data)) != -1) {
+                    total += count;
+                    publishProgress("" + (int) ((total * 100) / fileLength));
+                    outputStream.write(data, 0, count);
+                }
+                // flushing output
+                outputStream.flush();
+                // closing streams
+                outputStream.close();
+                inputStream.close();
+
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+            }
+            return null;
+        }
+
+        // progress bar Updating
+
+        protected void onProgressUpdate(String... progress) {
+            // progress percentage
+            progressDialog.setProgress(Integer.parseInt(progress[0]));
+        }
+
+        @Override
+        protected void onPostExecute(String file_url) {
+            dismissDialog(progressType);
+        }
+    }
+
+    //progress dialog
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case progressType: // we set this to 0
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("File is Downloading. Please wait...");
+                progressDialog.setIndeterminate(false);
+                progressDialog.setMax(100);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progressDialog.setCancelable(true);
+                progressDialog.show();
+                return progressDialog;
+            default:
+                return null;
+        }
+    }
 }
