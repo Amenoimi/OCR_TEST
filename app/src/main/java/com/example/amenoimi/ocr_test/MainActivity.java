@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     static final String CHINESE_LANGUAGE_SIM = "chi_sim";
     private ImageView imgSrc;
     public TextView t1;
-    public Button b1,b2;
+    public Button b1,b2,b3;
     public static final int progressType = 0;
     private ProgressDialog progressDialog;
     public int ImgToTextMode=0;
@@ -61,8 +62,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         t1=(TextView)findViewById(R.id.t1);
         b1=(Button)findViewById(R.id.b1);
         b2=(Button)findViewById(R.id.b2);
+        b3=(Button)findViewById(R.id.b3);
         b1.setOnClickListener(this);
         b2.setOnClickListener(this);
+        b3.setOnClickListener(this);
         Spinner spinner = (Spinner)findViewById(R.id.sp);
         ArrayAdapter<CharSequence> lunchList = ArrayAdapter.createFromResource(MainActivity.this,
                 R.array.lunch,
@@ -83,6 +86,17 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         try {
             TESSBASE_PATH =getDataDir(getApplicationContext());
             isExist(getDataDir(getApplicationContext())+"/tessdata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_tra.traineddata"))myDownload("chi_tra.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_sim.traineddata")) myDownload("chi_sim.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/eng.traineddata")) myDownload("eng.traineddata");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void up_mode(View v){
+        try {
             myDownload("chi_tra.traineddata");
             myDownload("chi_sim.traineddata");
             myDownload("eng.traineddata");
@@ -91,22 +105,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
 
     }
-
     public void get_img(View v){
         final String mimeType = "image/*";
-
-           //讀取圖片
         Intent intent = new Intent();
-        //開啟Pictures畫面Type設定為image
         intent.setType(mimeType);
-        //使用Intent.ACTION_GET_CONTENT這個Action
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        //取得照片後返回此畫面
         startActivityForResult(intent, 0);
-
-
-
-
     }
     public void get_img_now(View v){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -179,6 +183,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public void onClick(View v) {
         if( v.getId()==R.id.b1)get_img(v);
         if( v.getId()==R.id.b2)get_img_now(v);
+        if( v.getId()==R.id.b3)up_mode(v);
     }
     public String ocrWithEnglish() {
         String resString = "";
@@ -207,6 +212,26 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         ocrApi.clear();
         ocrApi.end();
         return  resString;
+    }
+
+    public boolean fileIsExists(String strFile)
+    {
+        //判斷文件夾是否存在
+        try
+        {
+            File f=new File(strFile);
+            if(!f.exists())
+            {
+                return false;
+            }
+
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public static void isExist(String path) {
@@ -340,4 +365,50 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 return null;
         }
     }
-}
+    public static Bitmap convertToBMW(Bitmap bmp, int w, int h,int tmp) {
+        int width = bmp.getWidth(); // 获取位图的宽
+        int height = bmp.getHeight(); // 获取位图的高
+        int[] pixels = new int[width * height]; // 通过位图的大小创建像素点数组
+        // 设定二值化的域值，默认值为100
+        //tmp = 180;
+        bmp.getPixels(pixels, 0, width, 0, 0, width, height);
+        int alpha = 0xFF << 24;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int grey = pixels[width * i + j];
+                // 分离三原色
+                alpha = ((grey & 0xFF000000) >> 24);
+                int red = ((grey & 0x00FF0000) >> 16);
+                int green = ((grey & 0x0000FF00) >> 8);
+                int blue = (grey & 0x000000FF);
+                if (red > tmp) {
+                    red = 255;
+                } else {
+                    red = 0;
+                }
+                if (blue > tmp) {
+                    blue = 255;
+                } else {
+                    blue = 0;
+                }
+                if (green > tmp) {
+                    green = 255;
+                } else {
+                    green = 0;
+                }
+                pixels[width * i + j] = alpha << 24 | red << 16 | green << 8
+                        | blue;
+                if (pixels[width * i + j] == -1) {
+                    pixels[width * i + j] = -1;
+                } else {
+                    pixels[width * i + j] = -16777216;
+                }
+            }
+        }
+        // 新建图片
+        Bitmap newBmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        // 设置图片数据
+        newBmp.setPixels(pixels, 0, width, 0, 0, width, height);
+        Bitmap resizeBmp = ThumbnailUtils.extractThumbnail(newBmp, w, h);
+        return resizeBmp;
+    }}
