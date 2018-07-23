@@ -40,9 +40,10 @@ import static android.os.Environment.getDownloadCacheDirectory;
 import static android.os.Environment.getRootDirectory;
 
 public class MainActivity extends AppCompatActivity  implements View.OnClickListener{
-    static final String TESSBASE_PATH ="/sdcard/download/tesseract/";
+    static String TESSBASE_PATH;
     static final String DEFAULT_LANGUAGE = "eng";
     static final String CHINESE_LANGUAGE = "chi_tra";
+    static final String CHINESE_LANGUAGE_SIM = "chi_sim";
     private ImageView imgSrc;
     public TextView t1;
     public Button b1,b2;
@@ -58,6 +59,17 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         b2=(Button)findViewById(R.id.b2);
         b1.setOnClickListener(this);
         b2.setOnClickListener(this);
+
+        try {
+            TESSBASE_PATH =getDataDir(getApplicationContext());
+            isExist(getDataDir(getApplicationContext())+"/tessdata");
+            myDownload("chi_tra.traineddata");
+            myDownload("chi_sim.traineddata");
+            myDownload("eng.traineddata");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void get_img(View v){
@@ -166,12 +178,20 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         return  resString;
     }
 
+    public static void isExist(String path) {
+        File file = new File(path);
+        //判斷文件夾是否存在,如果不存在則建立文件夾
+        if (!file.exists()) {
+            file.mkdir();
+        }
+    }
 
-    public void myDownload() throws Exception {
+
+    public void myDownload(String mod) throws Exception {
         try {
             String path = getDataDir(getApplicationContext());
-            path += "/myTest.png";
-            new DownloadFromURL().execute("https://shop0.asutora.com/assets/title.png", path);
+            path += "/tessdata/"+mod;
+            new DownloadFromURL().execute("https://github.com/tesseract-ocr/tessdata/raw/master/"+mod, path);
         } catch (Exception e) {
             e.printStackTrace();
         }
