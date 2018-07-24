@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -95,6 +96,16 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+
+//        Camera object = null;
+//        try {
+//            object = Camera.open();
+//        }
+//        catch (Exception e){
+//        }
+
+
 
     }
 
