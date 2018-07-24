@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, 0);
     }
+    //開相機
     public void get_img_now(View v){
         Calendar cal = Calendar.getInstance();
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
@@ -142,8 +143,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         // 取得檔案的 Uri
         Log.d("QUQ", data.toString());
-        Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
-        Uri uri = (requestCode == 0)? data.getData() : getImageUri(getApplicationContext(), imageBitmap);
+
+        Uri uri = data.getData();
         ContentResolver cr = this.getContentResolver();
 
             if (requestCode==0) {
@@ -159,6 +160,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 }
             } else if (requestCode==12) {
                 try {
+                    Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+                    uri = getImageUri(getApplicationContext(), imageBitmap);
                     if (uri != null) {
                         imgSrc.setImageURI(uri);
                         t1.setText(ocrWithEnglish());
@@ -183,7 +186,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         String resString = "";
 
         imgSrc.setDrawingCacheEnabled(true);
-        final Bitmap bitmap =convertToBMW(imgSrc.getDrawingCache(),imgSrc.getWidth()*10/2,imgSrc.getHeight()*10/2,100);
+        final Bitmap bitmap =convertToBMW(imgSrc.getDrawingCache(),imgSrc.getWidth()*3,imgSrc.getHeight()*3,180);
         final TessBaseAPI ocrApi = new TessBaseAPI();
 
         switch (ImgToTextMode){
