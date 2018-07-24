@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
             }
         });
-
+//判定有無需要檔案
         try {
             TESSBASE_PATH =getDataDir(getApplicationContext());
             isExist(getDataDir(getApplicationContext())+"/tessdata");
@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
 
     }
+    //開相簿
     public void get_img(View v){
         final String mimeType = "image/*";
         Intent intent = new Intent();
@@ -185,11 +186,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         if( v.getId()==R.id.b2)get_img_now(v);
         if( v.getId()==R.id.b3)up_mode(v);
     }
+    //執行OCR
     public String ocrWithEnglish() {
         String resString = "";
 
         imgSrc.setDrawingCacheEnabled(true);
-        final Bitmap bitmap = imgSrc.getDrawingCache();
+        final Bitmap bitmap =convertToBMW(imgSrc.getDrawingCache(),imgSrc.getWidth()*10/2,imgSrc.getHeight()*10/2,100);
         final TessBaseAPI ocrApi = new TessBaseAPI();
 
         switch (ImgToTextMode){
@@ -242,7 +244,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
 
-
+//下載模型檔
     public void myDownload(String mod) throws Exception {
         try {
             String path = getDataDir(getApplicationContext());
@@ -365,6 +367,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 return null;
         }
     }
+
+    //二值化
     public static Bitmap convertToBMW(Bitmap bmp, int w, int h,int tmp) {
         int width = bmp.getWidth(); // 获取位图的宽
         int height = bmp.getHeight(); // 获取位图的高
