@@ -27,11 +27,13 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOError;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public TextView t1;
     public Button b1,b2,b3;
     public static final int progressType = 0;
+    public static final int CAMERA_PIC_REQUEST = 12;
     private ProgressDialog progressDialog;
     public int ImgToTextMode=0;
     @Override
@@ -114,66 +117,55 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         startActivityForResult(intent, 0);
     }
     public void get_img_now(View v){
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        /**
-         * 1、注意这里，如果指定了Uri，则在onActivityResult中的 intent data  将返回null
-         * 2、如果不指定Uri的话，将可以在onActivityResult中 通过data.getParcelableExtra("data")获取bitmap对象，
-         * 而这个bitmap对象是被压缩的,非常模糊，我想这不是我们想要的
-         * 3、也有的地方说，没有指定Uri 则会默认保存，然后通过Uri.getData()就可以获得这个图片的Uri。但是我测试了一下模拟器和真机都
-         * 不是这样的 ，是上述1,2两种情况。可能与手机有关，所以用上述两种方法比较靠谱。
-         */
         Calendar cal = Calendar.getInstance();
-        Uri saveUri = Uri.fromFile(new File(getExternalFilesDir(Environment.DIRECTORY_DCIM), cal.getTime().toString()+".jpg"));
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
+    }
 
-        intent.putExtra(MediaStore.EXTRA_OUTPUT,saveUri);
-
-        startActivityForResult(intent,12);
-
-
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        return Uri.parse(path);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode != RESULT_OK) return;
+
         progressDialog = new ProgressDialog(this);
-//                    progressDialog.setTitle("");
+        // progressDialog.setTitle("");
         progressDialog.setMessage("識別中.....");
         progressDialog.setIndeterminate(false);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show();
 
         // 取得檔案的 Uri
-        Log.d("QUQ",data.toString());
-        Uri uri = data.getData();
+        Log.d("QUQ", data.toString());
+        Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+        Uri uri = (requestCode == 0)? data.getData() : getImageUri(getApplicationContext(), imageBitmap);
         ContentResolver cr = this.getContentResolver();
 
-            if(requestCode==0){
-                if ( resultCode == RESULT_OK )
-                {
-                    // 有選擇檔案
-                    try {
-                        if (uri != null) {
-
-                            imgSrc.setImageURI(uri);
-                            t1.setText(ocrWithEnglish());
-                            progressDialog.dismiss();
-                        }
-                    }catch (IOError e){
-
+            if (requestCode==0) {
+                // 有選擇檔案
+                try {
+                    if (uri != null) {
+                        imgSrc.setImageURI(uri);
+                        t1.setText(ocrWithEnglish());
+                        progressDialog.dismiss();
                     }
+                } catch (IOError e){
+
                 }
-            }else  if(requestCode==12){
-                if ( resultCode == RESULT_OK )
-                {
-                    try {
-                        if (uri != null) {
-
-                            imgSrc.setImageURI(uri);
-                            t1.setText(ocrWithEnglish());
-                            progressDialog.dismiss();
-                        }
-                    }catch (IOError e){
-
+            } else if (requestCode==12) {
+                try {
+                    if (uri != null) {
+                        imgSrc.setImageURI(uri);
+                        t1.setText(ocrWithEnglish());
+                        progressDialog.dismiss();
                     }
+                } catch (IOError e){
+
                 }
             }
 
