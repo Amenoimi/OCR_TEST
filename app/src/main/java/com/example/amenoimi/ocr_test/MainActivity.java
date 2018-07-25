@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private ImageReader mImageReader;
     private CameraCaptureSession mCameraCaptureSession;
     private CameraDevice mCameraDevice;
-
+    int tmp=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 
@@ -233,6 +232,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         public void onOpened(CameraDevice camera) {//打开摄像头
             mCameraDevice = camera;
             //开启预览
+
             takePreview();
         }
 
@@ -372,18 +372,21 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
     }
+
     @Override
     public void onClick(View v) {
         if( v.getId()==R.id.b1)get_img(v);
         if( v.getId()==R.id.b2)get_img_now(v);
         if( v.getId()==R.id.b3)up_mode(v);
         if(v.getId()==R.id.b4){
-//            if(b4.getBackground()==ContextCompat.getDrawable(this,R.drawable.unsee)){
-//                b4.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.see));
+            if(tmp==0){
+                tmp=1;
+                b4.setBackgroundResource(R.drawable.see);
                 initVIew();
-//            }else{
-//                b4.setBackgroundDrawable(ContextCompat.getDrawable(this,R.drawable.unsee));
-//            }
+            }else{
+                tmp=0;
+                b4.setBackgroundResource(R.drawable.unsee);
+            }
 
         }
     }
