@@ -173,6 +173,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
 
+    private void get_View() {
+
+    }
+
 
     /**
      * 初始化Camera2
@@ -356,12 +360,16 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             if(tmp==0){
                 tmp=1;
                 b4.setBackgroundResource(R.drawable.see);
+                if(mSurfaceView != null)
+                    mSurfaceView.setVisibility(View.VISIBLE);
                 initVIew();
             }else{
                 tmp=0;
                 b4.setBackgroundResource(R.drawable.unsee);
+                if(mSurfaceView != null)
+                    mSurfaceView.setVisibility(View.GONE);
+                delView();
             }
-
         }
     }
     //執行OCR
