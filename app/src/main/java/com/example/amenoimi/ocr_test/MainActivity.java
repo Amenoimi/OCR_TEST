@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private ProgressDialog progressDialog;
     public int ImgToTextMode=0;
 
+    public int now_ocr=0;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -174,8 +176,41 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
 
-    private void get_View() {
+    private String get_View() {
+        String resString = "";
 
+        imgSrc.setDrawingCacheEnabled(true);
+        final Bitmap bitmap =convertToBMW( getBitmap(),imgSrc.getWidth()*3,imgSrc.getHeight()*3,180);
+        final TessBaseAPI ocrApi = new TessBaseAPI();
+
+        switch (ImgToTextMode){
+            case 0:
+                ocrApi.init(TESSBASE_PATH, CHINESE_LANGUAGE);
+                break;
+            case 1:
+                ocrApi.init(TESSBASE_PATH, CHINESE_LANGUAGE_SIM);
+                break;
+            case 2:
+                ocrApi.init(TESSBASE_PATH,DEFAULT_LANGUAGE );
+                break;
+        }
+
+        ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
+
+        ocrApi.setImage(bitmap);
+        resString = ocrApi.getUTF8Text();
+
+        ocrApi.clear();
+        ocrApi.end();
+        return  resString;
+    }
+    public Bitmap getBitmap() {
+       mSurfaceView.setDrawingCacheEnabled(true);
+        mSurfaceView.buildDrawingCache(true);
+        final Bitmap bitmap = Bitmap.createBitmap( mSurfaceView.getDrawingCache() );
+        mSurfaceView.setDrawingCacheEnabled(false);
+        mSurfaceView.destroyDrawingCache();
+        return bitmap;
     }
 
 
@@ -256,6 +291,16 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         // 显示预览
                         CaptureRequest previewRequest = previewRequestBuilder.build();
                         mCameraCaptureSession.setRepeatingRequest(previewRequest, null, childHandler);
+
+
+                        if(now_ocr<1){
+                            Message msg = mHandler.obtainMessage();
+                            msg.what = 1;
+                            msg.sendToTarget();
+                        }
+
+
+
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
                     }
@@ -271,7 +316,19 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
 
-
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what == 1) {
+                if(now_ocr==0){
+                    t1.setText(get_View());
+                    now_ocr=0;
+                }
+                now_ocr++;
+            }
+            super.handleMessage(msg);
+        }
+    };
 
 
     public void up_mode(View v){
@@ -359,16 +416,14 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             if(mSurfaceView != null)
                 mSurfaceView.setVisibility(View.GONE);
             imgSrc.setVisibility(View.VISIBLE);
-            imgSrc.getLayoutParams().height = 1320;
-            imgSrc.setImageURI(null);
+
         }
         if( v.getId()==R.id.b2){
             get_img_now(v);
             if(mSurfaceView != null)
                 mSurfaceView.setVisibility(View.GONE);
             imgSrc.setVisibility(View.VISIBLE);
-            imgSrc.getLayoutParams().height = 1320;
-            imgSrc.setImageURI(null);
+
         }
         if( v.getId()==R.id.b3)up_mode(v);
         if(v.getId()==R.id.b4){
@@ -385,7 +440,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 if(mSurfaceView != null)
                     mSurfaceView.setVisibility(View.GONE);
                 imgSrc.setVisibility(View.VISIBLE);
-                imgSrc.getLayoutParams().height = 1320;
+                imgSrc.getLayoutParams().height = 800;
                 imgSrc.setImageURI(null);
                 delView();
             }
