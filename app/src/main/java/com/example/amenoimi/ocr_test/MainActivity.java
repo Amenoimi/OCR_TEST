@@ -119,6 +119,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         b2.setOnClickListener(this);
         b3.setOnClickListener(this);
         b4.setOnClickListener(this);
+        // mSurfaceView
+        mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
+        mSurfaceView.setOnClickListener(this);
+        mSurfaceHolder = mSurfaceView.getHolder();
+        mSurfaceHolder.setKeepScreenOn(true);
         Spinner spinner = (Spinner)findViewById(R.id.sp);
         ArrayAdapter<CharSequence> lunchList = ArrayAdapter.createFromResource(MainActivity.this,
                 R.array.lunch,
@@ -155,11 +160,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private void initVIew() {
         iv_show = (ImageView) findViewById(R.id.imageView);
 
-        // mSurfaceView
-        mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
-        mSurfaceView.setOnClickListener(this);
-        mSurfaceHolder = mSurfaceView.getHolder();
-        mSurfaceHolder.setKeepScreenOn(true);
+
 
         // 初始化Camera2
         initCamera2();
@@ -353,8 +354,22 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        if( v.getId()==R.id.b1)get_img(v);
-        if( v.getId()==R.id.b2)get_img_now(v);
+        if( v.getId()==R.id.b1){
+            get_img(v);
+            if(mSurfaceView != null)
+                mSurfaceView.setVisibility(View.GONE);
+            imgSrc.setVisibility(View.VISIBLE);
+            imgSrc.getLayoutParams().height = 1320;
+            imgSrc.setImageURI(null);
+        }
+        if( v.getId()==R.id.b2){
+            get_img_now(v);
+            if(mSurfaceView != null)
+                mSurfaceView.setVisibility(View.GONE);
+            imgSrc.setVisibility(View.VISIBLE);
+            imgSrc.getLayoutParams().height = 1320;
+            imgSrc.setImageURI(null);
+        }
         if( v.getId()==R.id.b3)up_mode(v);
         if(v.getId()==R.id.b4){
             if(tmp==0){
@@ -362,12 +377,16 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 b4.setBackgroundResource(R.drawable.see);
                 if(mSurfaceView != null)
                     mSurfaceView.setVisibility(View.VISIBLE);
+                imgSrc.setVisibility(View.GONE);
                 initVIew();
             }else{
                 tmp=0;
                 b4.setBackgroundResource(R.drawable.unsee);
                 if(mSurfaceView != null)
                     mSurfaceView.setVisibility(View.GONE);
+                imgSrc.setVisibility(View.VISIBLE);
+                imgSrc.getLayoutParams().height = 1320;
+                imgSrc.setImageURI(null);
                 delView();
             }
         }
