@@ -155,32 +155,23 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
      */
     private void initVIew() {
         iv_show = (ImageView) findViewById(R.id.imageView);
-        //mSurfaceView
+
+        // mSurfaceView
         mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
         mSurfaceView.setOnClickListener(this);
         mSurfaceHolder = mSurfaceView.getHolder();
         mSurfaceHolder.setKeepScreenOn(true);
-        // mSurfaceView添加回调
-        mSurfaceHolder.addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) { //SurfaceView创建
-                // 初始化Camera
-                initCamera2();
-            }
 
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            }
+        // 初始化Camera2
+        initCamera2();
+    }
 
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) { //SurfaceView销毁
-                // 释放Camera资源
-                if (null != mCameraDevice) {
-                    mCameraDevice.close();
-                    MainActivity.this.mCameraDevice = null;
-                }
-            }
-        });
+    private void delView() {
+        // 释放Camera资源
+        if (null != mCameraDevice) {
+            mCameraDevice.close();
+            MainActivity.this.mCameraDevice = null;
+        }
     }
 
 
@@ -195,23 +186,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         mainHandler = new Handler(getMainLooper());
         mCameraID = "" + CameraCharacteristics.LENS_FACING_FRONT;//后摄像头
         mImageReader = ImageReader.newInstance(1080, 1920, ImageFormat.JPEG,1);
-        mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() { //可以在这里处理拍照得到的临时照片 例如，写入本地
-            @Override
-            public void onImageAvailable(ImageReader reader) {
-                mCameraDevice.close();
-                mSurfaceView.setVisibility(View.GONE);
-                iv_show.setVisibility(View.VISIBLE);
-                // 拿到拍照照片数据
-                Image image = reader.acquireNextImage();
-                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
-                byte[] bytes = new byte[buffer.remaining()];
-                buffer.get(bytes);//由缓冲区存入字节数组
-                final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                if (bitmap != null) {
-                    iv_show.setImageBitmap(bitmap);
-                }
-            }
-        }, mainHandler);
         //获取摄像头管理
         mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
