@@ -65,17 +65,18 @@
 
                     <Button
                         android:id="@+id/b1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="20dp"
+                        android:layout_height="50dp"
                         android:layout_weight="1"
-                        android:text="相簿" />
+                        android:background="@drawable/filebook" />
 
                     <Button
                         android:id="@+id/b2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="相機" />
+                        android:text="相機"
+                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/b4"

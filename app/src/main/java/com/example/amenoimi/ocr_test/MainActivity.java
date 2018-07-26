@@ -114,6 +114,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private CameraDevice mCameraDevice;
     int tmp=0;
     public   Bitmap new_bitmap;
+    public Thread mThread;
+    public boolean f=true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -190,7 +192,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         String resString = "";
 
         imgSrc.setDrawingCacheEnabled(true);
-        final Bitmap bitmap =convertToBMW( b,b.getWidth(),b.getHeight(),180);
+        final Bitmap bitmap =b;//convertToBMW( b,b.getWidth(),b.getHeight(),180);
         final TessBaseAPI ocrApi = new TessBaseAPI();
 
         switch (ImgToTextMode){
@@ -265,6 +267,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     new_bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
 //                    t1.setText(get_View( new_bitmap));
                     Log.d("QQ","C");
+                    image.close();
                 }
             }
         }, mainHandler);
@@ -340,27 +343,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         CaptureRequest previewRequest = previewRequestBuilder.build();
                         mCameraCaptureSession.setRepeatingRequest(previewRequest, null, childHandler);
 
-
-                        if(now_ocr<1){
-                            now_ocr=1;
-                            takePicture();
-                            while (new_bitmap==null){
-
-                            }
-                            Message msg = mHandler.obtainMessage();
-                            msg.obj =null;
-//                            msg.what = 1;
-                            msg.obj =get_View(new_bitmap); // Put the string into Message, into "obj" field.
-                            while ( msg.obj ==null){
-
-                            }
-                            Log.d("QQ",msg.obj.toString());
-                            msg.setTarget(mHandler); // Set the Handler
-                            msg.sendToTarget();
-
-                            Log.d("QQ","B");
-                        }
-
+                        f=true;
+                        mThread= new Thread(r1);
+                        mThread.start();
 
 
                     } catch (CameraAccessException e) {
@@ -377,6 +362,41 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             e.printStackTrace();
         }
     }
+
+    private Runnable r1=new Runnable () {
+
+        public void run() {
+
+            // TODO Auto-generated method stub
+            while (f) {
+                try {
+                    Thread.sleep(1500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if (now_ocr < 1) {
+                    now_ocr = 1;
+                    takePicture();
+                    while (new_bitmap == null) {
+
+                    }
+                    Message msg = mHandler.obtainMessage();
+                    msg.obj = null;
+                    //                            msg.what = 1;
+                    msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
+                    while (msg.obj == null) {
+
+                    }
+                    Log.d("QQ", msg.obj.toString());
+                    msg.setTarget(mHandler); // Set the Handler
+                    msg.sendToTarget();
+
+                    Log.d("QQ", "B");
+                }
+
+            }
+        }
+    };
 
     Handler mHandler = new Handler() {
         @Override
@@ -543,6 +563,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     mSurfaceView.setVisibility(View.GONE);
                 imgSrc.setVisibility(View.VISIBLE);
                 imgSrc.getLayoutParams().height = 800;
+                f=false;
                 delView();
             }
         }
