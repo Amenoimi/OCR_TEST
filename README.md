@@ -4,10 +4,12 @@
 
 
 Mode：
+
   https://github.com/tesseract-ocr/tessdata
 
 
 reference：
+
   http://honglung.pixnet.net/blog/post/165953088-android-%E5%88%A9%E7%94%A8-tesseract-ocr-%E9%80%B2%E8%A1%8C-%E6%96%87%E5%AD%97%E8%BE%A8%E8%AD%98
   
   https://www.jianshu.com/p/7f766eb2f4e7
