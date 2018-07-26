@@ -779,17 +779,15 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     //二值化
     public static Bitmap convertToBMW(Bitmap bmp, int w, int h,int tmp) {
-        int width = bmp.getWidth(); // 获取位图的宽
-        int height = bmp.getHeight(); // 获取位图的高
-        int[] pixels = new int[width * height]; // 通过位图的大小创建像素点数组
-        // 设定二值化的域值，默认值为100
-        //tmp = 180;
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+        int[] pixels = new int[width * height];
         bmp.getPixels(pixels, 0, width, 0, 0, width, height);
         int alpha = 0xFF << 24;
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 int grey = pixels[width * i + j];
-                // 分离三原色
+                // 分離三原色
                 alpha = ((grey & 0xFF000000) >> 24);
                 int red = ((grey & 0x00FF0000) >> 16);
                 int green = ((grey & 0x0000FF00) >> 8);
@@ -818,9 +816,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 }
             }
         }
-        // 新建图片
         Bitmap newBmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        // 设置图片数据
         newBmp.setPixels(pixels, 0, width, 0, 0, width, height);
         Bitmap resizeBmp = ThumbnailUtils.extractThumbnail(newBmp, w, h);
         return resizeBmp;
