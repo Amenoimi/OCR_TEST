@@ -45,6 +45,13 @@
                     android:layout_weight="1"
                     android:visibility="gone" />
 
+                <Switch
+                    android:id="@+id/sw"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="此圖是否為單一字元" />
+
                 <ImageView
                     android:id="@+id/imageView"
                     android:layout_width="match_parent"

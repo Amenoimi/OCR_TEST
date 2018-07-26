@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -39,11 +40,14 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,7 +75,7 @@ import static android.os.Environment.getDataDirectory;
 import static android.os.Environment.getDownloadCacheDirectory;
 import static android.os.Environment.getRootDirectory;
 
-public class MainActivity extends AppCompatActivity  implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity  implements View.OnClickListener,CompoundButton.OnCheckedChangeListener{
     static String TESSBASE_PATH;
     static final String DEFAULT_LANGUAGE = "eng";
     static final String CHINESE_LANGUAGE = "chi_tra";
@@ -79,12 +83,15 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private ImageView imgSrc;
     public TextView t1;
     public Button b1,b2,b3,b4;
+    public Switch sw;
     public static final int progressType = 0;
     public static final int CAMERA_PIC_REQUEST = 12;
     private ProgressDialog progressDialog;
     public int ImgToTextMode=0;
 
     public int now_ocr=0;
+
+    public int TextMode=0;
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
@@ -106,10 +113,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private CameraCaptureSession mCameraCaptureSession;
     private CameraDevice mCameraDevice;
     int tmp=0;
-
+    public   Bitmap new_bitmap;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         imgSrc=(ImageView)findViewById(R.id.imageView);
         t1=(TextView)findViewById(R.id.t1);
@@ -117,10 +125,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         b2=(Button)findViewById(R.id.b2);
         b3=(Button)findViewById(R.id.b3);
         b4=(Button)findViewById(R.id.b4);
+        sw = (Switch) findViewById(R.id.sw);
         b1.setOnClickListener(this);
         b2.setOnClickListener(this);
         b3.setOnClickListener(this);
         b4.setOnClickListener(this);
+        sw.setOnCheckedChangeListener(this);
         // mSurfaceView
         mSurfaceView = (SurfaceView) findViewById(R.id.surfaceView);
         mSurfaceView.setOnClickListener(this);
@@ -176,11 +186,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
 
-    private String get_View() {
+    private String get_View( Bitmap b) {
         String resString = "";
 
         imgSrc.setDrawingCacheEnabled(true);
-        final Bitmap bitmap =convertToBMW( getBitmap(),imgSrc.getWidth()*3,imgSrc.getHeight()*3,180);
+        final Bitmap bitmap =convertToBMW( b,b.getWidth(),b.getHeight(),180);
         final TessBaseAPI ocrApi = new TessBaseAPI();
 
         switch (ImgToTextMode){
@@ -195,7 +205,17 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 break;
         }
 
-        ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
+        switch (TextMode){
+            case 0:
+                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
+                break;
+            case 1:
+                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_CHAR      );
+                break;
+            case 2:
+                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_WORD      );
+                break;
+        }
 
         ocrApi.setImage(bitmap);
         resString = ocrApi.getUTF8Text();
@@ -224,15 +244,42 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         childHandler = new Handler(handlerThread.getLooper());
         mainHandler = new Handler(getMainLooper());
         mCameraID = "" + CameraCharacteristics.LENS_FACING_FRONT;//后摄像头
-        mImageReader = ImageReader.newInstance(1080, 1920, ImageFormat.JPEG,1);
+        mImageReader = ImageReader.newInstance(1080, 1020, ImageFormat.JPEG,1);
+
+        mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() { //可以在这里处理拍照得到的临时照片 例如，写入本地
+            @Override
+            public void onImageAvailable(ImageReader reader) {
+//                mCameraDevice.close();
+//                mSurfaceView.setVisibility(View.GONE);
+//                iv_show.setVisibility(View.VISIBLE);
+                // 拿到拍照照片数据
+                Image image = reader.acquireNextImage();
+                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+                byte[] bytes = new byte[buffer.remaining()];
+                buffer.get(bytes);//由缓冲区存入字节数组
+                final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                if (bitmap != null) {
+
+                    Matrix matrix  = new Matrix();
+                    matrix.setRotate(90);
+                    new_bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+//                    t1.setText(get_View( new_bitmap));
+                    Log.d("QQ","C");
+                }
+            }
+        }, mainHandler);
         //获取摄像头管理
         mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+
+        //获取摄像头管理
+
         try {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             //打开摄像头
             mCameraManager.openCamera(mCameraID, stateCallback, mainHandler);
+
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -253,6 +300,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         @Override
         public void onDisconnected(CameraDevice camera) {//关闭摄像头
             if (null != mCameraDevice) {
+                Log.d("QQ","bye");
                 mCameraDevice.close();
                 MainActivity.this.mCameraDevice = null;
             }
@@ -294,9 +342,23 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
                         if(now_ocr<1){
+                            now_ocr=1;
+                            takePicture();
+                            while (new_bitmap==null){
+
+                            }
                             Message msg = mHandler.obtainMessage();
-                            msg.what = 1;
+                            msg.obj =null;
+//                            msg.what = 1;
+                            msg.obj =get_View(new_bitmap); // Put the string into Message, into "obj" field.
+                            while ( msg.obj ==null){
+
+                            }
+                            Log.d("QQ",msg.obj.toString());
+                            msg.setTarget(mHandler); // Set the Handler
                             msg.sendToTarget();
+
+                            Log.d("QQ","B");
                         }
 
 
@@ -319,16 +381,54 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
-            if(msg.what == 1) {
-                if(now_ocr==0){
-                    t1.setText(get_View());
-                    now_ocr=0;
-                }
-                now_ocr++;
-            }
+//            if(msg.what == 1) {
+//                if(now_ocr==0){
+//                    t1.setText(get_View());
+//                    now_ocr=0;
+//                }
+//                now_ocr++;
+//            }
+
+                Log.d("QQ","A");
+                String message = (String) msg.obj;
+                t1.setText(message);
+                now_ocr=0;
+
+
             super.handleMessage(msg);
         }
     };
+
+
+    /**
+     * 拍照
+     */
+    private void takePicture() {
+        if (mCameraDevice == null) return;
+        // 创建拍照需要的CaptureRequest.Builder
+        final CaptureRequest.Builder captureRequestBuilder;
+        try {
+            captureRequestBuilder = mCameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            // 将imageReader的surface作为CaptureRequest.Builder的目标
+            captureRequestBuilder.addTarget(mImageReader.getSurface());
+            // 自动对焦
+            captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE);
+            // 自动曝光
+            captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+            // 获取手机方向
+            int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            // 根据设备方向计算设置照片的方向
+            captureRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            //拍照
+            CaptureRequest mCaptureRequest = captureRequestBuilder.build();
+            mCameraCaptureSession.capture(mCaptureRequest, null, childHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
 
     public void up_mode(View v){
@@ -412,6 +512,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     @Override
     public void onClick(View v) {
         if( v.getId()==R.id.b1){
+            b4.setBackgroundResource(R.drawable.unsee);
             get_img(v);
             if(mSurfaceView != null)
                 mSurfaceView.setVisibility(View.GONE);
@@ -419,6 +520,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         }
         if( v.getId()==R.id.b2){
+            b4.setBackgroundResource(R.drawable.unsee);
             get_img_now(v);
             if(mSurfaceView != null)
                 mSurfaceView.setVisibility(View.GONE);
@@ -441,7 +543,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     mSurfaceView.setVisibility(View.GONE);
                 imgSrc.setVisibility(View.VISIBLE);
                 imgSrc.getLayoutParams().height = 800;
-                imgSrc.setImageURI(null);
                 delView();
             }
         }
@@ -466,7 +567,18 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 break;
         }
 
-        ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
+        switch (TextMode){
+            case 0:
+                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
+                break;
+            case 1:
+                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_CHAR      );
+                break;
+            case 2:
+                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_COLUMN        );
+                break;
+        }
+
 
         ocrApi.setImage(bitmap);
         resString = ocrApi.getUTF8Text();
@@ -557,6 +669,21 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             }
         }
         return data.toString();
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+        switch (sw.getId()){
+            case R.id.sw:
+                if(sw.isChecked())TextMode=2;
+                else TextMode=0;
+                break;
+
+
+        }
+
+
     }
 
     class DownloadFromURL extends AsyncTask<String, String, String> {
