@@ -573,7 +573,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         String resString = "";
 
         imgSrc.setDrawingCacheEnabled(true);
-        final Bitmap bitmap =convertToBMW(imgSrc.getDrawingCache(),imgSrc.getWidth()*3,imgSrc.getHeight()*3,180);
+        final Bitmap bitmap =imgSrc.getDrawingCache();//convertToBMW(imgSrc.getDrawingCache(),imgSrc.getWidth()*3,imgSrc.getHeight()*3,180);
         final TessBaseAPI ocrApi = new TessBaseAPI();
 
         switch (ImgToTextMode){
@@ -588,17 +588,19 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 break;
         }
 
-        switch (TextMode){
-            case 0:
-                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
-                break;
-            case 1:
-                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_CHAR      );
-                break;
-            case 2:
-                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_COLUMN        );
-                break;
-        }
+//        switch (TextMode){
+//            case 0:
+//                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
+//                break;
+//            case 1:
+//                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_CHAR      );
+//                break;
+//            case 2:
+//                ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_COLUMN        );
+//                break;
+//        }
+
+        ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SINGLE_LINE    );
 
 
         ocrApi.setImage(bitmap);
@@ -643,6 +645,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             String path = getDataDir(getApplicationContext());
             path += "/tessdata/"+mod;
             new DownloadFromURL().execute("https://github.com/tesseract-ocr/tessdata/raw/master/"+mod, path);
+//            new DownloadFromURL().execute("https://github.com/tesseract-ocr/tessdata_best/raw/master/"+mod, path);
+//            new DownloadFromURL().execute("https://github.com/tesseract-ocr/tessdata_fast/raw/master/"+mod, path);
         } catch (Exception e) {
             e.printStackTrace();
         }
