@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private CameraCaptureSession mCameraCaptureSession;
     private CameraDevice mCameraDevice;
     int tmp=0;
-    public   Bitmap new_bitmap;
+    public Bitmap new_bitmap;
     public Thread mThread;
     public boolean f=true;
     @Override
@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
             }
         });
-//判定有無需要檔案
+        //判定有無需要檔案
         try {
             TESSBASE_PATH =getDataDir(getApplicationContext());
             isExist(getDataDir(getApplicationContext())+"/tessdata");
@@ -171,16 +171,27 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     /**
      * 初始化
      */
-    private void initVIew() {
+    private void OpenCamera2() {
+        
+        b4.setBackgroundResource(R.drawable.see);
+        if(mSurfaceView != null)
+            mSurfaceView.setVisibility(View.VISIBLE);
+        imgSrc.setVisibility(View.GONE);
         iv_show = (ImageView) findViewById(R.id.imageView);
-
-
-
+        
         // 初始化Camera2
         initCamera2();
     }
 
-    private void delView() {
+    private void CloseCamera2() {
+        
+        b4.setBackgroundResource(R.drawable.unsee);
+        if(mSurfaceView != null)
+            mSurfaceView.setVisibility(View.GONE);
+        imgSrc.setVisibility(View.VISIBLE);
+        imgSrc.getLayoutParams().height = 800;
+        f=false;
+        
         // 释放Camera资源
         if (null != mCameraDevice) {
             mCameraDevice.close();
@@ -224,8 +235,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         ocrApi.clear();
         ocrApi.end();
+        Log.d("flag", "123123123");
         return  resString;
     }
+
     public Bitmap getBitmap() {
        mSurfaceView.setDrawingCacheEnabled(true);
         mSurfaceView.buildDrawingCache(true);
@@ -265,6 +278,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     Matrix matrix  = new Matrix();
                     matrix.setRotate(90);
                     new_bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+                    // new_bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight());
 //                    t1.setText(get_View( new_bitmap));
                     Log.d("QQ","C");
                     image.close();
@@ -343,10 +357,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         CaptureRequest previewRequest = previewRequestBuilder.build();
                         mCameraCaptureSession.setRepeatingRequest(previewRequest, null, childHandler);
 
+                        /*/ 自動拍照功能
                         f=true;
                         mThread= new Thread(r1);
                         mThread.start();
-
+                        /*/
+                        mThread= new Thread(Camera2_ocr);
+                        mThread.start();
 
                     } catch (CameraAccessException e) {
                         e.printStackTrace();
@@ -362,6 +379,33 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             e.printStackTrace();
         }
     }
+
+    private Runnable Camera2_ocr = new Runnable () {
+
+        public void run() {
+
+            while (true) {
+                try {
+
+                    if (new_bitmap == null) {
+                        Thread.sleep(1500);
+                    }
+                    else {
+                        Log.d("flag", "11111");
+                        Message msg = mHandler.obtainMessage();
+                        msg.obj = get_View(new_bitmap);
+                        msg.setTarget(mHandler);
+                        msg.sendToTarget();
+                        new_bitmap = null;
+                        Log.d("flag", "456456456");
+                    }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
     private Runnable r1=new Runnable () {
 
@@ -448,9 +492,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
 
 
-
-
-
     public void up_mode(View v){
         try {
             myDownload("chi_tra.traineddata");
@@ -468,12 +509,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         intent.setType(mimeType);
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, 0);
-    }
-    //開相機
-    public void get_img_now(View v){
-        Calendar cal = Calendar.getInstance();
-        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(cameraIntent, CAMERA_PIC_REQUEST);
     }
 
     public Uri getImageUri(Context inContext, Bitmap inImage) {
@@ -541,30 +576,21 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
         if( v.getId()==R.id.b2){
             b4.setBackgroundResource(R.drawable.unsee);
-            get_img_now(v);
-            if(mSurfaceView != null)
-                mSurfaceView.setVisibility(View.GONE);
-            imgSrc.setVisibility(View.VISIBLE);
-
+            if(imgSrc != null) {
+                imgSrc.setVisibility(View.GONE);
+                OpenCamera2();
+            }
+            takePicture();
         }
-        if( v.getId()==R.id.b3)up_mode(v);
+        if( v.getId()==R.id.b3) up_mode(v);
         if(v.getId()==R.id.b4){
             if(tmp==0){
                 tmp=1;
-                b4.setBackgroundResource(R.drawable.see);
-                if(mSurfaceView != null)
-                    mSurfaceView.setVisibility(View.VISIBLE);
-                imgSrc.setVisibility(View.GONE);
-                initVIew();
+                OpenCamera2();
             }else{
                 tmp=0;
-                b4.setBackgroundResource(R.drawable.unsee);
-                if(mSurfaceView != null)
-                    mSurfaceView.setVisibility(View.GONE);
-                imgSrc.setVisibility(View.VISIBLE);
-                imgSrc.getLayoutParams().height = 800;
-                f=false;
-                delView();
+                
+                CloseCamera2();
             }
         }
     }
