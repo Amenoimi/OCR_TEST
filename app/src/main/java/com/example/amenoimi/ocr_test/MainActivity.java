@@ -158,13 +158,27 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         try {
             TESSBASE_PATH =getDataDir(getApplicationContext());
             isExist(getDataDir(getApplicationContext())+"/tessdata");
-            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_tra.traineddata"))myDownload("chi_tra.traineddata");
-            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_sim.traineddata")) myDownload("chi_sim.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_tra.traineddata"))mymodeDownload("chi_tra.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_sim.traineddata")) mymodeDownload("chi_sim.traineddata");
             if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/eng.traineddata")) myDownload("eng.traineddata");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
+    //下載自己訓練的模型檔
+    public void mymodeDownload(String mod) throws Exception {
+        try {
+            String path = getDataDir(getApplicationContext());
+            path += "/tessdata/"+mod;
+            new DownloadFromURL().execute("https://github.com/Amenoimi/tessdata_chi_tra.traineddata_rest/raw/master/"+mod, path);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 
@@ -205,6 +219,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             case 2:
                 ocrApi.init(TESSBASE_PATH,DEFAULT_LANGUAGE );
                 break;
+
         }
 
         switch (TextMode){
