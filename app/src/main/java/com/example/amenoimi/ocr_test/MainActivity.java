@@ -118,9 +118,42 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public Thread mThread;
     public boolean f=true;
     public int img_or_video_mode=0;
+
+    public static String[] resizeArray(String[] arrayToResize, int size) {
+        // create a new array twice the size
+        String[] newArray = new String[size];
+
+        System.arraycopy(arrayToResize, 0,
+                newArray, 0, arrayToResize.length);
+        return newArray;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+        String [] permission_array = new String[0];
+
+        // Camera permission
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            permission_array = resizeArray(permission_array, permission_array.length + 1);
+            permission_array[permission_array.length -1] = Manifest.permission.CAMERA;
+        }
+
+        // STORAGE permission
+        permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            permission_array = resizeArray(permission_array, permission_array.length + 1);
+            permission_array[permission_array.length -1] = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        }
+
+        if (permission_array.length != 0)
+            ActivityCompat.requestPermissions(MainActivity.this, permission_array, 1);
+
+
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         imgSrc=(ImageView)findViewById(R.id.imageView);
