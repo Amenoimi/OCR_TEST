@@ -193,9 +193,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         try {
             TESSBASE_PATH =getDataDir(getApplicationContext());
             isExist(getDataDir(getApplicationContext())+"/tessdata");
-            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_tra.traineddata"))myDownload("chi_tra.traineddata");
-            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_sim.traineddata")) myDownload("chi_sim.traineddata");
-            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/eng.traineddata")) myDownload("eng.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_tra.traineddata"))mymodeDownload("chi_tra.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_sim.traineddata")) mymodeDownload("chi_sim.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/eng.traineddata")) mymodeDownload("eng.traineddata");
             if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/img.traineddata")) mymodeDownload("img.traineddata");
         } catch (Exception e) {
             e.printStackTrace();
@@ -524,9 +524,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     public void up_mode(View v){
         try {
-            myDownload("chi_tra.traineddata");
-            myDownload("chi_sim.traineddata");
-            myDownload("eng.traineddata");
+            mymodeDownload("chi_tra.traineddata");
+            mymodeDownload("chi_sim.traineddata");
+            mymodeDownload("eng.traineddata");
             mymodeDownload("img.traineddata");
         } catch (Exception e) {
             e.printStackTrace();
