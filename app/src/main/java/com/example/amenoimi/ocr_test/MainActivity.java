@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     static final String DEFAULT_LANGUAGE = "eng";
     static final String CHINESE_LANGUAGE = "chi_tra";
     static final String CHINESE_LANGUAGE_SIM = "chi_sim";
+    static final String img_LANG = "img";
     private ImageView imgSrc;
     public TextView t1;
     public Button b1,b2,b3,b4;
@@ -116,6 +117,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public   Bitmap new_bitmap;
     public Thread mThread;
     public boolean f=true;
+    public int img_or_video_mode=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,9 +160,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         try {
             TESSBASE_PATH =getDataDir(getApplicationContext());
             isExist(getDataDir(getApplicationContext())+"/tessdata");
-            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_tra.traineddata"))mymodeDownload("chi_tra.traineddata");
-            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_sim.traineddata")) mymodeDownload("chi_sim.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_tra.traineddata"))myDownload("chi_tra.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_sim.traineddata")) myDownload("chi_sim.traineddata");
             if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/eng.traineddata")) myDownload("eng.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/img.traineddata")) mymodeDownload("img.traineddata");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -177,19 +180,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             e.printStackTrace();
         }
     }
-
-
-
-
-
-    /**
+  /**
      * 初始化
      */
     private void initVIew() {
         iv_show = (ImageView) findViewById(R.id.imageView);
-
-
-
         // 初始化Camera2
         initCamera2();
     }
@@ -219,8 +214,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             case 2:
                 ocrApi.init(TESSBASE_PATH,DEFAULT_LANGUAGE );
                 break;
-
+            case 3:
+                ocrApi.init(TESSBASE_PATH,img_LANG );
+                break;
         }
+
 
         switch (TextMode){
             case 0:
@@ -358,9 +356,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         CaptureRequest previewRequest = previewRequestBuilder.build();
                         mCameraCaptureSession.setRepeatingRequest(previewRequest, null, childHandler);
 
-                        f=true;
-                        mThread= new Thread(r1);
-                        mThread.start();
+
+                            f = true;
+                            mThread = new Thread(r1);
+                            mThread.start();
+
+
 
 
                     } catch (CameraAccessException e) {
@@ -384,13 +385,32 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
             // TODO Auto-generated method stub
             while (f) {
-                try {
-                    Thread.sleep(1500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if (now_ocr < 1) {
-                    now_ocr = 1;
+                if(img_or_video_mode<1){
+                    try {
+                        Thread.sleep(1500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (now_ocr < 1) {
+                        now_ocr = 1;
+                        takePicture();
+                        while (new_bitmap == null) {
+
+                        }
+                        Message msg = mHandler.obtainMessage();
+                        msg.obj = null;
+                        //                            msg.what = 1;
+                        msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
+                        while (msg.obj == null) {
+
+                        }
+                        Log.d("QQ", msg.obj.toString());
+                        msg.setTarget(mHandler); // Set the Handler
+                        msg.sendToTarget();
+
+                        Log.d("QQ", "B");
+                    }
+                }else if(img_or_video_mode==2){
                     takePicture();
                     while (new_bitmap == null) {
 
@@ -405,8 +425,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     Log.d("QQ", msg.obj.toString());
                     msg.setTarget(mHandler); // Set the Handler
                     msg.sendToTarget();
-
-                    Log.d("QQ", "B");
+                    img_or_video_mode++;
+                    f=false;
                 }
 
             }
@@ -427,6 +447,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 Log.d("QQ","A");
                 String message = (String) msg.obj;
                 t1.setText(message);
+                if(img_or_video_mode>0){
+                    imgSrc.setImageBitmap(new_bitmap);
+                }
                 now_ocr=0;
 
 
@@ -471,6 +494,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             myDownload("chi_tra.traineddata");
             myDownload("chi_sim.traineddata");
             myDownload("eng.traineddata");
+            mymodeDownload("img.traineddata");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -555,11 +579,33 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         }
         if( v.getId()==R.id.b2){
-            b4.setBackgroundResource(R.drawable.unsee);
-            get_img_now(v);
-            if(mSurfaceView != null)
-                mSurfaceView.setVisibility(View.GONE);
-            imgSrc.setVisibility(View.VISIBLE);
+//            b4.setBackgroundResource(R.drawable.unsee);
+//            get_img_now(v);
+//            if(mSurfaceView != null)
+//                mSurfaceView.setVisibility(View.GONE);
+//            imgSrc.setVisibility(View.VISIBLE);
+            if(img_or_video_mode==0||img_or_video_mode==1) img_or_video_mode++;
+            if(img_or_video_mode==1){
+                b4.setBackgroundResource(R.drawable.see);
+                if(mSurfaceView != null)
+                    mSurfaceView.setVisibility(View.VISIBLE);
+                imgSrc.setVisibility(View.GONE);
+                initVIew();
+            }else if(img_or_video_mode==2){
+
+                if(mSurfaceView != null)
+                    mSurfaceView.setVisibility(View.GONE);
+                imgSrc.setVisibility(View.VISIBLE);
+                imgSrc.getLayoutParams().height = 800;
+//                while (new_bitmap==null){
+//
+//                }
+
+            }else if(img_or_video_mode==3){
+                img_or_video_mode=0;
+                b4.setBackgroundResource(R.drawable.unsee);
+                delView();
+            }
 
         }
         if( v.getId()==R.id.b3)up_mode(v);
@@ -571,7 +617,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     mSurfaceView.setVisibility(View.VISIBLE);
                 imgSrc.setVisibility(View.GONE);
                 initVIew();
-            }else{
+            }else if(tmp==1){
                 tmp=0;
                 b4.setBackgroundResource(R.drawable.unsee);
                 if(mSurfaceView != null)
@@ -600,6 +646,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 break;
             case 2:
                 ocrApi.init(TESSBASE_PATH,DEFAULT_LANGUAGE );
+                break;
+            case 3:
+                ocrApi.init(TESSBASE_PATH,img_LANG );
                 break;
         }
 
