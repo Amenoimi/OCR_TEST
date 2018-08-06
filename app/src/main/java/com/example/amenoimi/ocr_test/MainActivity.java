@@ -524,7 +524,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     public void up_mode(View v){
         try {
-            mymodeDownload("chi_tra.traineddata");
+        mymodeDownload("chi_tra.traineddata");
             mymodeDownload("chi_sim.traineddata");
             mymodeDownload("eng.traineddata");
             mymodeDownload("img.traineddata");
