@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         imgSrc.setDrawingCacheEnabled(true);
         final Bitmap bitmap =b;//convertToBMW( b,b.getWidth(),b.getHeight(),180);
         final TessBaseAPI ocrApi = new TessBaseAPI();
-
+        
         switch (ImgToTextMode){
             case 0:
                 ocrApi.init(TESSBASE_PATH, CHINESE_LANGUAGE);
