@@ -208,6 +208,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         try {
             String path = getDataDir(getApplicationContext());
             path += "/tessdata/"+mod;
+            if(fileIsExists(path + "/" + mod)) {
+                deleteFile(path + "/" + mod);
+            }
             new DownloadFromURL().execute("https://github.com/Amenoimi/tessdata_chi_tra.traineddata_rest/raw/master/"+mod, path);
         } catch (Exception e) {
             e.printStackTrace();
@@ -524,7 +527,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     public void up_mode(View v){
         try {
-        mymodeDownload("chi_tra.traineddata");
+            mymodeDownload("chi_tra.traineddata");
             mymodeDownload("chi_sim.traineddata");
             mymodeDownload("eng.traineddata");
             mymodeDownload("img.traineddata");
@@ -641,7 +644,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             }
 
         }
-        if( v.getId()==R.id.b3)up_mode(v);
+        if(v.getId()==R.id.b3) up_mode(v);
         if(v.getId()==R.id.b4){
             if(tmp==0){
                 tmp=1;
@@ -733,19 +736,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         //判斷文件夾是否存在,如果不存在則建立文件夾
         if (!file.exists()) {
             file.mkdir();
-        }
-    }
-
-//下載模型檔
-    public void myDownload(String mod) throws Exception {
-        try {
-            String path = getDataDir(getApplicationContext());
-            path += "/tessdata/"+mod;
-            new DownloadFromURL().execute("https://github.com/tesseract-ocr/tessdata/raw/master/"+mod, path);
-//            new DownloadFromURL().execute("https://github.com/tesseract-ocr/tessdata_best/raw/master/"+mod, path);
-//            new DownloadFromURL().execute("https://github.com/tesseract-ocr/tessdata_fast/raw/master/"+mod, path);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
