@@ -38,12 +38,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1" />
 
-                <SurfaceView
-                    android:id="@+id/surfaceView"
-                    android:layout_width="match_parent"
-                    android:layout_height="500dp"
-                    android:layout_weight="1"
-                    android:visibility="gone" />
+
 
                 <Switch
                     android:id="@+id/sw"
@@ -53,11 +48,35 @@
                     android:text="此圖是否為單一字元"
                     android:visibility="gone" />
 
-                <ImageView
-                    android:id="@+id/imageView"
+
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    app:srcCompat="@android:color/darker_gray" />
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <SurfaceView
+                        android:id="@+id/surfaceView"
+                        android:layout_width="match_parent"
+                        android:layout_height="500dp"
+                        android:layout_weight="1"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_weight="1"
+                        app:srcCompat="@android:color/darker_gray" />
+
+                    <SurfaceView
+                        android:id="@+id/surfaceView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-100dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
