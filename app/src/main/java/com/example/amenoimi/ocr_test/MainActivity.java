@@ -19,6 +19,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.CaptureResult;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.ThumbnailUtils;
@@ -429,7 +430,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             while (f) {
                 if(img_or_video_mode<1){
                     try {
-                        Thread.sleep(1500);
+                        Thread.sleep(150);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
