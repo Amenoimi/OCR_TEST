@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
@@ -284,6 +285,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         return bitmap;
     }
 
+    // 剪裁 Bitmap 會依照新的大小 自動至中剪裁
+    public Bitmap Crop_Bitmap (Bitmap input, int re_width, int re_height) {
+        int w = input.getWidth(), h = input.getHeight();
+        return Bitmap.createBitmap(input, (w - re_width) / 2, (h - re_height) / 2, re_width, re_height);
+    }
 
     /**
      * 初始化Camera2
@@ -580,6 +586,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 try {
                     if (uri != null) {
                         imgSrc.setImageURI(uri);
+                        // imgSrc.setImageBitmap(Crop_Bitmap(((BitmapDrawable)imgSrc.getDrawable()).getBitmap(), 100, 50));
                         t1.setText(ocrWithEnglish());
                         progressDialog.dismiss();
                     }
