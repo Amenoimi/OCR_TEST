@@ -9,8 +9,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
@@ -77,7 +82,7 @@ import static android.os.Environment.getDataDirectory;
 import static android.os.Environment.getDownloadCacheDirectory;
 import static android.os.Environment.getRootDirectory;
 
-public class MainActivity extends AppCompatActivity  implements View.OnClickListener,CompoundButton.OnCheckedChangeListener{
+public class MainActivity extends AppCompatActivity  implements View.OnClickListener,CompoundButton.OnCheckedChangeListener, SurfaceHolder.Callback{
     static String TESSBASE_PATH;
     static final String DEFAULT_LANGUAGE = "eng";
     static final String CHINESE_LANGUAGE = "chi_tra";
@@ -175,6 +180,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         mSurfaceView.setOnClickListener(this);
         mSurfaceHolder = mSurfaceView.getHolder();
         mSurfaceHolder.setKeepScreenOn(true);
+
+
+        // surfaceView2
+        SurfaceHolder mSurfaceHolder2 = ((SurfaceView) findViewById(R.id.surfaceView2)).getHolder();
+        mSurfaceHolder2.addCallback(this);
+
         Spinner spinner = (Spinner)findViewById(R.id.sp);
         ArrayAdapter<CharSequence> lunchList = ArrayAdapter.createFromResource(MainActivity.this,
                 R.array.lunch,
@@ -805,6 +816,37 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
     }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder surfaceHolder) {
+        //定义画笔
+        Paint mpaint = new Paint();
+        mpaint.setColor(Color.BLUE);
+        // mpaint.setAntiAlias(true);//去锯齿
+        mpaint.setStyle(Paint.Style.STROKE);//空心
+        // 设置paint的外框宽度
+        mpaint.setStrokeWidth(2f);
+
+        Canvas canvas=new Canvas();
+
+        canvas =  surfaceHolder.lockCanvas();
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //清楚掉上一次的画框。
+        Rect r = new Rect(0,0,100,100);
+        canvas.drawRect(r, mpaint);
+        surfaceHolder.unlockCanvasAndPost(canvas);
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
+
+    }
+
 
     class DownloadFromURL extends AsyncTask<String, String, String> {
         @Override
