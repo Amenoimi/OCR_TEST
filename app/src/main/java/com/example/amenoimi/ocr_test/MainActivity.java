@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -183,7 +184,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
         // surfaceView2
-        SurfaceHolder mSurfaceHolder2 = ((SurfaceView) findViewById(R.id.surfaceView2)).getHolder();
+        SurfaceView mSurfaceView2 = (SurfaceView) findViewById(R.id.surfaceView2);
+        SurfaceHolder mSurfaceHolder2 = mSurfaceView2.getHolder();
+        mSurfaceView2.setZOrderOnTop(true);//处于顶层
+        mSurfaceHolder2.setFormat(PixelFormat.TRANSLUCENT);
         mSurfaceHolder2.addCallback(this);
 
         Spinner spinner = (Spinner)findViewById(R.id.sp);
