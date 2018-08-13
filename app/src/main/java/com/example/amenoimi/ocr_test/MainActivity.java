@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public Thread mThread;
     public boolean f=true;
     public int img_or_video_mode=0;
-
+    public int bitmap_rew,bitmap_reh;
     public static String[] resizeArray(String[] arrayToResize, int size) {
         // create a new array twice the size
         String[] newArray = new String[size];
@@ -304,6 +304,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     // 剪裁 Bitmap 會依照新的大小 自動至中剪裁
     public Bitmap Crop_Bitmap (Bitmap input, int re_width, int re_height) {
         int w = input.getWidth(), h = input.getHeight();
+        Log.d("ABC", "w" + w);
+        Log.d("ABC", "h" + h);
+        Log.d("ABC", "rw" + re_width);
+        Log.d("ABC", "rh" + re_height);
         return Bitmap.createBitmap(input, (w - re_width) / 2, (h - re_height) / 2, re_width, re_height);
     }
 
@@ -331,11 +335,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 byte[] bytes = new byte[buffer.remaining()];
                 buffer.get(bytes);//由缓冲区存入字节数组
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                if (bitmap != null) {
+                if (bitmap != null && bitmap_rew!=0 && bitmap_reh!=0) {
 
                     Matrix matrix  = new Matrix();
                     matrix.setRotate(90);
                     new_bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+                    new_bitmap=Crop_Bitmap (new_bitmap, new_bitmap.getWidth(), new_bitmap.getHeight()/3);
 //                    t1.setText(get_View( new_bitmap));
                     Log.d("QQ","C");
                     image.close();
@@ -629,11 +634,14 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+       SurfaceView mUI=findViewById(R.id.surfaceView2);
         if( v.getId()==R.id.b1){
             b4.setBackgroundResource(R.drawable.unsee);
             get_img(v);
-            if(mSurfaceView != null)
+            if(mSurfaceView != null){
                 mSurfaceView.setVisibility(View.GONE);
+                mUI.setVisibility(View.GONE);
+            }
             imgSrc.setVisibility(View.VISIBLE);
 
         }
@@ -648,12 +656,15 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 b4.setBackgroundResource(R.drawable.see);
                 if(mSurfaceView != null)
                     mSurfaceView.setVisibility(View.VISIBLE);
+                mUI.setVisibility(View.VISIBLE);
                 imgSrc.setVisibility(View.GONE);
                 initVIew();
             }else if(img_or_video_mode==2){
 
-                if(mSurfaceView != null)
+                if(mSurfaceView != null){
                     mSurfaceView.setVisibility(View.GONE);
+                    mUI.setVisibility(View.GONE);
+                }
                 imgSrc.setVisibility(View.VISIBLE);
                 imgSrc.getLayoutParams().height = 800;
 //                while (new_bitmap==null){
@@ -674,13 +685,16 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 b4.setBackgroundResource(R.drawable.see);
                 if(mSurfaceView != null)
                     mSurfaceView.setVisibility(View.VISIBLE);
+                mUI.setVisibility(View.VISIBLE);
                 imgSrc.setVisibility(View.GONE);
                 initVIew();
             }else if(tmp==1){
                 tmp=0;
                 b4.setBackgroundResource(R.drawable.unsee);
-                if(mSurfaceView != null)
+                if(mSurfaceView != null){
                     mSurfaceView.setVisibility(View.GONE);
+                    mUI.setVisibility(View.GONE);
+                }
                 imgSrc.setVisibility(View.VISIBLE);
                 imgSrc.getLayoutParams().height = 800;
                 f=false;
@@ -829,13 +843,15 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         // mpaint.setAntiAlias(true);//去锯齿
         mpaint.setStyle(Paint.Style.STROKE);//空心
         // 设置paint的外框宽度
-        mpaint.setStrokeWidth(2f);
+        mpaint.setStrokeWidth(20f);
 
         Canvas canvas=new Canvas();
 
         canvas =  surfaceHolder.lockCanvas();
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //清楚掉上一次的画框。
-        Rect r = new Rect(0,0,100,100);
+        bitmap_rew=canvas.getWidth();
+        bitmap_reh=canvas.getHeight()/3;
+        Rect r = new Rect(0,canvas.getHeight()/3,canvas.getWidth(),canvas.getHeight()/3*2);
         canvas.drawRect(r, mpaint);
         surfaceHolder.unlockCanvasAndPost(canvas);
 
