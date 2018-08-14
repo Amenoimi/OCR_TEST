@@ -26,6 +26,7 @@ import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
+import android.hardware.camera2.TotalCaptureResult;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.ThumbnailUtils;
@@ -78,6 +79,7 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import static android.os.Environment.getDataDirectory;
 import static android.os.Environment.getDownloadCacheDirectory;
@@ -417,7 +419,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         previewRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
                         // 显示预览
                         CaptureRequest previewRequest = previewRequestBuilder.build();
-                        mCameraCaptureSession.setRepeatingRequest(previewRequest, null, childHandler);
+
+                        // add CaptureCallback
+                        mCameraCaptureSession.setRepeatingRequest(previewRequest, mCaptureCallback, childHandler);
 
 
                             f = true;
@@ -441,6 +445,49 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             e.printStackTrace();
         }
     }
+
+    public boolean areWeFocused = false;
+    private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
+
+        private void process(CaptureResult result) {
+
+            /*
+            if (result.get(CaptureResult.CONTROL_AF_STATE) == CaptureResult.CONTROL_AF_TRIGGER_START) {
+                Log.d("AAA", "YYYYYY" );
+            }*/
+            
+            // Log.d("YYY", "process: " +  result.get(CaptureResult.CONTROL_AF_STATE).toString() );
+
+
+            /*
+            int afState = result.get(CaptureResult.CONTROL_AF_STATE);
+            if (CaptureResult.CONTROL_AF_TRIGGER_START == afState) {
+                if (areWeFocused) {
+                    //Run specific task here
+                    Log.d("AAA", "YYYYYY" );
+                }
+            }
+            if (CaptureResult.CONTROL_AF_STATE_PASSIVE_FOCUSED == afState) {
+                areWeFocused = true;
+            } else {
+                areWeFocused = false;
+            }
+            Log.d("AAA", String.valueOf(afState) );
+            */
+        }
+
+        @Override
+        public void onCaptureProgressed(CameraCaptureSession session, CaptureRequest request,
+                                        CaptureResult partialResult) {
+            process(partialResult);
+        }
+
+        @Override
+        public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request,
+                                       TotalCaptureResult result) {
+            process(result);
+        }
+    };
 
     private Runnable r1=new Runnable () {
 
