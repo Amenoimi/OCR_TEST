@@ -129,6 +129,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public boolean f=true;
     public int img_or_video_mode=0;
     public int bitmap_rew,bitmap_reh;
+    public boolean areWeFocused = false;
+    public Float Focus_distance;
     public static String[] resizeArray(String[] arrayToResize, int size) {
         // create a new array twice the size
         String[] newArray = new String[size];
@@ -208,6 +210,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
             }
         });
+        Focus_distance=0.0f;
+
 //判定有無需要檔案
         try {
             TESSBASE_PATH =getDataDir(getApplicationContext());
@@ -446,20 +450,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
 
-    public boolean areWeFocused = false;
+
     private CameraCaptureSession.CaptureCallback mCaptureCallback = new CameraCaptureSession.CaptureCallback() {
 
         private void process(CaptureResult result) {
 
-            /*
-            if (result.get(CaptureResult.CONTROL_AF_STATE) == CaptureResult.CONTROL_AF_TRIGGER_START) {
-                Log.d("AAA", "YYYYYY" );
-            }*/
-            
-            // Log.d("YYY", "process: " +  result.get(CaptureResult.CONTROL_AF_STATE).toString() );
-
-
-            /*
             int afState = result.get(CaptureResult.CONTROL_AF_STATE);
             if (CaptureResult.CONTROL_AF_TRIGGER_START == afState) {
                 if (areWeFocused) {
@@ -472,8 +467,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             } else {
                 areWeFocused = false;
             }
+            Focus_distance= result.get(CaptureResult.LENS_FOCUS_DISTANCE);
+            Log.d("OAAAO", Focus_distance.toString());
             Log.d("AAA", String.valueOf(afState) );
-            */
+            Log.d("t", String.valueOf(areWeFocused) );
+
         }
 
         @Override
@@ -501,7 +499,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if (now_ocr < 1) {
+                    if (now_ocr < 1 && areWeFocused && Focus_distance>3) {
                         now_ocr = 1;
                         takePicture();
                         while (new_bitmap == null) {
