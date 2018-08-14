@@ -495,7 +495,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             while (f) {
                 if(img_or_video_mode<1){
                     try {
-                        Thread.sleep(800);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
