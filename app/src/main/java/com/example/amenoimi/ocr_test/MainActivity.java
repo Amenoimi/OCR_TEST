@@ -86,6 +86,8 @@ import static android.os.Environment.getDataDirectory;
 import static android.os.Environment.getDownloadCacheDirectory;
 import static android.os.Environment.getRootDirectory;
 
+import com.google.zxing.qrcode.detector.AlignmentPattern;
+
 public class MainActivity extends AppCompatActivity  implements View.OnClickListener,CompoundButton.OnCheckedChangeListener, SurfaceHolder.Callback{
     static String TESSBASE_PATH;
     static final String DEFAULT_LANGUAGE = "eng";
@@ -750,6 +752,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 imgSrc.setVisibility(View.VISIBLE);
                 imgSrc.getLayoutParams().height = 800;
                 f=false;
+//                while (new_bitmap == null) {
+//
+//                }
                 delView();
             }
         }
