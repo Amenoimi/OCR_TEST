@@ -24,6 +24,7 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
@@ -494,6 +495,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             // TODO Auto-generated method stub
             while (f) {
                 if(img_or_video_mode<1){
+
                     try {
                         Thread.sleep(500);
                     } catch (InterruptedException e) {
@@ -559,7 +561,11 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     imgSrc.setImageBitmap(new_bitmap);
                 }
                 now_ocr=0;
-
+                if(img_or_video_mode==3){
+                    img_or_video_mode=0;
+                    b4.setBackgroundResource(R.drawable.unsee);
+                    delView();
+                }
 
             super.handleMessage(msg);
         }
@@ -712,6 +718,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 }
                 imgSrc.setVisibility(View.VISIBLE);
                 imgSrc.getLayoutParams().height = 800;
+
 //                while (new_bitmap==null){
 //
 //                }
