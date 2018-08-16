@@ -93,6 +93,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     static final String DEFAULT_LANGUAGE = "eng";
     static final String CHINESE_LANGUAGE = "chi_tra";
     static final String CHINESE_LANGUAGE_SIM = "chi_sim";
+    static final String QR = "QR";
     static final String img_LANG = "img";
     private ImageView imgSrc;
     public TextView t1;
@@ -127,7 +128,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private CameraCaptureSession mCameraCaptureSession;
     private CameraDevice mCameraDevice;
     int tmp=0;
-    public   Bitmap new_bitmap;
+    public Bitmap new_bitmap;
     public Thread mThread;
     public boolean f=true;
     public int img_or_video_mode=0;
@@ -223,6 +224,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_sim.traineddata")) mymodeDownload("chi_sim.traineddata");
             if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/eng.traineddata")) mymodeDownload("eng.traineddata");
             if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/img.traineddata")) mymodeDownload("img.traineddata");
+            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/QR.traineddata")) mymodeDownload("QR.traineddata");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -499,7 +501,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 if(img_or_video_mode<1){
 
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(150);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -512,15 +514,22 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         Message msg = mHandler.obtainMessage();
                         msg.obj = null;
                         //                            msg.what = 1;
-                        msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
-                        while (msg.obj == null) {
+//                        BitMatrix QR_bitmap=new BitMatrix(new_bitmap.getWidth(),new_bitmap.getHeight(),new_bitmap.getDensity(),new_bitmap.getNinePatchChunk());
+//                        new AlignmentPatternFinder(new_bitmap,0,0,new_bitmap.getWidth(),new_bitmap.getHeight());
 
-                        }
-                        Log.d("QQ", msg.obj.toString());
-                        msg.setTarget(mHandler); // Set the Handler
-                        msg.sendToTarget();
+//                        Bitmap.createScaledBitmap(new_bitmap, 960, 480, false);
+                        Log.d("BOOLOUT.tf", String.valueOf(QR(new_bitmap)));
+//                       if(QR(new_bitmap)){
+                            msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
+                            while (msg.obj == null) {
 
-                        Log.d("QQ", "B");
+                            }
+                            Log.d("QQ", msg.obj.toString());
+                            msg.setTarget(mHandler); // Set the Handler
+                            msg.sendToTarget();
+
+                            Log.d("QQ", "B");
+//                        }
                     }
                 }else if(img_or_video_mode==2){
                     takePicture();
@@ -611,6 +620,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             mymodeDownload("chi_sim.traineddata");
             mymodeDownload("eng.traineddata");
             mymodeDownload("img.traineddata");
+            mymodeDownload("QR.traineddata");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1039,6 +1049,50 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         Bitmap resizeBmp = ThumbnailUtils.extractThumbnail(newBmp, w, h);
         return resizeBmp;
     }
+
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
+    }
+
+    private Boolean QR( Bitmap b) {
+        String resString = "";
+
+        imgSrc.setDrawingCacheEnabled(true);
+        final Bitmap bitmap =b;//convertToBMW( b,b.getWidth(),b.getHeight(),180);
+        final TessBaseAPI ocrApi = new TessBaseAPI();
+
+        ocrApi.init(TESSBASE_PATH, QR);
+        ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
+
+        ocrApi.setImage(bitmap);
+        resString = ocrApi.getUTF8Text();
+
+        ocrApi.clear();
+        ocrApi.end();
+//        Log.d("BOOLOUT.st",resString);
+//        String[] t= resString.split("");
+//        int boolout=0;
+//        for(int i=0;t.length<i;i++){
+//            if(t[i]=="回")boolout++;
+//        }
+//        Log.d("BOOLOUT", String.valueOf(boolout));
+//        if(boolout==3) return  true;
+        return  false;
+    }
+
 
 
 
