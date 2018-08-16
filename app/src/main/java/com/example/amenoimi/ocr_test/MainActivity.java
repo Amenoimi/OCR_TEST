@@ -87,6 +87,7 @@ import static android.os.Environment.getDownloadCacheDirectory;
 import static android.os.Environment.getRootDirectory;
 
 import com.google.zxing.qrcode.detector.AlignmentPattern;
+import com.cv4j.core.datamodel.ByteProcessor;
 
 public class MainActivity extends AppCompatActivity  implements View.OnClickListener,CompoundButton.OnCheckedChangeListener, SurfaceHolder.Callback{
     static String TESSBASE_PATH;

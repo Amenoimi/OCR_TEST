@@ -28,4 +28,6 @@ dependencies {
     implementation 'com.rmtheis:tess-two:+'
     implementation 'com.google.zxing:core:+'
     implementation 'com.journeyapps:zxing-android-embedded:+'
+    implementation 'com.cv4j.piccrawler:crawler:+'
+    implementation 'com.cv4j:cv4j:+'
 }
