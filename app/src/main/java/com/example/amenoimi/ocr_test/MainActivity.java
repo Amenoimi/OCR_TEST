@@ -1315,7 +1315,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
 
-//抓框框
     public static Bitmap GET_IMG(Bitmap bmp, int w, int h,int tmp) {
         int width = bmp.getWidth();
         int height = bmp.getHeight();
@@ -1354,6 +1353,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 }
             }
         }
+        Bitmap newBmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        newBmp.setPixels(pixels, 0, width, 0, 0, width, height);
+        Bitmap resizeBmp = ThumbnailUtils.extractThumbnail(newBmp, w, h);
+        return resizeBmp;
+    }
+
+
 
 
 }
