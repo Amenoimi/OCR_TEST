@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     static final String DEFAULT_LANGUAGE = "eng";
     static final String CHINESE_LANGUAGE = "chi_tra";
     static final String CHINESE_LANGUAGE_SIM = "chi_sim";
-    static final String QR = "QR";
     static final String img_LANG = "img";
     private ImageView imgSrc;
     public TextView t1;
@@ -133,7 +132,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     private SurfaceView mSurfaceView;
     private SurfaceHolder mSurfaceHolder;
-    private ImageView iv_show;
+    private SurfaceView mSurfaceView2 ;
+    private SurfaceHolder mSurfaceHolder2 ;
+
+
     private CameraManager mCameraManager;//摄像头管理器
     private Handler childHandler, mainHandler;
     private String mCameraID;//摄像头Id 0 为后  1 为前
@@ -145,9 +147,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public Thread mThread;
     public boolean f=true;
     public int img_or_video_mode=0;
-    public int bitmap_rew,bitmap_reh;
     public boolean areWeFocused = false;
     public Float Focus_distance;
+    public Boolean QR_code_bool=false;
+
     public static String[] resizeArray(String[] arrayToResize, int size) {
         // create a new array twice the size
         String[] newArray = new String[size];
@@ -205,8 +208,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
         // surfaceView2
-        SurfaceView mSurfaceView2 = (SurfaceView) findViewById(R.id.surfaceView2);
-        SurfaceHolder mSurfaceHolder2 = mSurfaceView2.getHolder();
+         mSurfaceView2 = (SurfaceView) findViewById(R.id.surfaceView2);
+         mSurfaceHolder2 = mSurfaceView2.getHolder();
         mSurfaceView2.setZOrderOnTop(true);//处于顶层
         mSurfaceHolder2.setFormat(PixelFormat.TRANSLUCENT);
         mSurfaceHolder2.addCallback(this);
@@ -261,7 +264,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
      * 初始化
      */
     private void initVIew() {
-        iv_show = (ImageView) findViewById(R.id.imageView);
+
         // 初始化Camera2
         initCamera2();
     }
@@ -326,13 +329,21 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
 
     // 剪裁 Bitmap 會依照新的大小 自動至中剪裁
-    public Bitmap Crop_Bitmap (Bitmap input, int re_width, int re_height) {
+    public Bitmap Crop_Bitmap (Bitmap input,int re_width, int re_height) {
         int w = input.getWidth(), h = input.getHeight();
         Log.d("ABC", "w" + w);
         Log.d("ABC", "h" + h);
         Log.d("ABC", "rw" + re_width);
         Log.d("ABC", "rh" + re_height);
         return Bitmap.createBitmap(input, (w - re_width) / 2, (h - re_height) / 2, re_width, re_height);
+    }
+    // 剪裁 Bitmap 會依照新的大小 自動至中剪裁
+    public Bitmap Crop_Bitmap_rect (Bitmap input,int x,int y,int re_width, int re_height) {
+        Log.d(" Crop_Bitmap_rect", "x" + x);
+        Log.d(" Crop_Bitmap_rect", "y" + y);
+        Log.d(" Crop_Bitmap_rect", "rw" + re_width);
+        Log.d(" Crop_Bitmap_rect", "rh" + re_height);
+        return Bitmap.createBitmap(input, x , y, re_width, re_height);
     }
 
     /**
@@ -350,26 +361,50 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() { //可以在这里处理拍照得到的临时照片 例如，写入本地
             @Override
             public void onImageAvailable(ImageReader reader) {
-//                mCameraDevice.close();
-//                mSurfaceView.setVisibility(View.GONE);
-//                iv_show.setVisibility(View.VISIBLE);
+
                 // 拿到拍照照片数据
                 Image image = reader.acquireNextImage();
                 ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                 byte[] bytes = new byte[buffer.remaining()];
                 buffer.get(bytes);//由缓冲区存入字节数组
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                if (bitmap != null && bitmap_rew!=0 && bitmap_reh!=0) {
+//                QR_code_bool=false;
+                if (bitmap != null) {
 
                     Matrix matrix  = new Matrix();
                     matrix.setRotate(90);
                     new_bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+                    Log.d("GAN", String.valueOf(new_bitmap.getWidth()));
+                    Log.d("GAN", String.valueOf(new_bitmap.getHeight()));
+
 //                    new_bitmap=Crop_Bitmap (new_bitmap, new_bitmap.getWidth(), new_bitmap.getHeight()/3);
                     CV4JImage cv4JImage = new CV4JImage(new_bitmap);
                     ImageProcessor img= cv4JImage.getProcessor();
-                    Log.d("OUO(GAN", String.valueOf(findQRCodeBounding(img,1,6).tl().x));
-//                    t1.setText(get_View( new_bitmap));
-                    Log.d("QQ","C");
+
+                    Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
+                    Log.d("GAN", String.valueOf(mSurfaceView2.getHeight()));
+
+                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 6);
+                    Log.d("OUO(GAN((tx", String.valueOf(rect.tl().x));
+                    Log.d("OUO(GAN((ty", String.valueOf(rect.tl().y));
+                    Log.d("OUO(GAN((bx", String.valueOf(rect.br().x));
+                    Log.d("OUO(GAN((by", String.valueOf(rect.br().y));
+                    surfaceDrawing(mSurfaceView2.getHolder(), rect.tl().x*1.5, rect.tl().y*1.36770833333, rect.br().x*1.5, rect.br().y*1.36770833333);
+
+                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0) {
+                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.tl().x, rect.tl().y, Math.abs(rect.br().x-rect.tl().x ),Math.abs(rect.br().y-rect.tl().y));
+                        new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),140);
+                        mSurfaceView.setVisibility(View.GONE);
+                        imgSrc.setVisibility(View.VISIBLE);
+                        imgSrc.setImageBitmap(new_bitmap);
+                        Log.d("QQ", "C");
+                        QR_code_bool=true;
+                        f=false;
+                        b4.setBackgroundResource(R.drawable.unsee);
+                    }else{
+//                        new_bitmap=null;
+                        QR_code_bool=false;
+                    }
                     image.close();
                 }
             }
@@ -524,7 +559,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     if (now_ocr < 1 && areWeFocused && Focus_distance>3) {
                         now_ocr = 1;
                         takePicture();
-                        while (new_bitmap == null) {
+                        while (new_bitmap == null && QR_code_bool==false) {
 
                         }
                         Message msg = mHandler.obtainMessage();
@@ -534,9 +569,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 //                        new AlignmentPatternFinder(new_bitmap,0,0,new_bitmap.getWidth(),new_bitmap.getHeight());
 
 //                        Bitmap.createScaledBitmap(new_bitmap, 960, 480, false);
-                        Log.d("BOOLOUT.tf", String.valueOf(QR(new_bitmap)));
-//                       if(QR(new_bitmap)){
+
+
                             msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
+                            QR_code_bool=false;
                             while (msg.obj == null) {
 
                             }
@@ -545,7 +581,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                             msg.sendToTarget();
 
                             Log.d("QQ", "B");
-//                        }
+
                     }
                 }else if(img_or_video_mode==2){
                     takePicture();
@@ -591,6 +627,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 if(img_or_video_mode==3){
                     img_or_video_mode=0;
                     b4.setBackgroundResource(R.drawable.unsee);
+                    QR_code_bool=false;
                     delView();
                 }
 
@@ -722,7 +759,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 mUI.setVisibility(View.GONE);
             }
             imgSrc.setVisibility(View.VISIBLE);
-
+            QR_code_bool=false;
         }
         if( v.getId()==R.id.b2){
 //            b4.setBackgroundResource(R.drawable.unsee);
@@ -754,6 +791,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             }else if(img_or_video_mode==3){
                 img_or_video_mode=0;
                 b4.setBackgroundResource(R.drawable.unsee);
+                QR_code_bool=false;
                 delView();
             }
 
@@ -778,6 +816,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 imgSrc.setVisibility(View.VISIBLE);
                 imgSrc.getLayoutParams().height = 800;
                 f=false;
+                QR_code_bool=false;
 //                while (new_bitmap == null) {
 //
 //                }
@@ -932,9 +971,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
         canvas =  surfaceHolder.lockCanvas();
         canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //清楚掉上一次的画框。
-        bitmap_rew=canvas.getWidth();
-        bitmap_reh=canvas.getHeight()/3;
-        Rect r = new Rect(0,canvas.getHeight()/3,canvas.getWidth(),canvas.getHeight()/3*2);
+        Rect r = new Rect(0,0,0,0);
         canvas.drawRect(r, mpaint);
         surfaceHolder.unlockCanvasAndPost(canvas);
 
@@ -1083,31 +1120,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         return resizedBitmap;
     }
 
-    private Boolean QR( Bitmap b) {
-        String resString = "";
 
-        imgSrc.setDrawingCacheEnabled(true);
-        final Bitmap bitmap =b;//convertToBMW( b,b.getWidth(),b.getHeight(),180);
-        final TessBaseAPI ocrApi = new TessBaseAPI();
-
-        ocrApi.init(TESSBASE_PATH, QR);
-        ocrApi.setPageSegMode(TessBaseAPI.PageSegMode.PSM_SPARSE_TEXT_OSD    );
-
-        ocrApi.setImage(bitmap);
-        resString = ocrApi.getUTF8Text();
-
-        ocrApi.clear();
-        ocrApi.end();
-//        Log.d("BOOLOUT.st",resString);
-//        String[] t= resString.split("");
-//        int boolout=0;
-//        for(int i=0;t.length<i;i++){
-//            if(t[i]=="回")boolout++;
-//        }
-//        Log.d("BOOLOUT", String.valueOf(boolout));
-//        if(boolout==3) return  true;
-        return  false;
-    }
 
 
     public com.cv4j.core.datamodel.Rect findQRCodeBounding(ImageProcessor image, int n1, int n2) {
@@ -1280,5 +1293,67 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             return mdev[0] <= 20;
         }
     }
+
+    public void surfaceDrawing(SurfaceHolder surfaceHolder, Double L, Double T, Double R, Double B) {
+        //定义画笔
+        Paint mpaint = new Paint();
+        mpaint.setColor(Color.BLUE);
+        // mpaint.setAntiAlias(true);//去锯齿
+        mpaint.setStyle(Paint.Style.STROKE);//空心
+        // 设置paint的外框宽度
+        mpaint.setStrokeWidth(20f);
+
+        Canvas canvas=new Canvas();
+
+        canvas =  surfaceHolder.lockCanvas();
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //清楚掉上一次的画框。
+        Rect r = new Rect(  L.intValue(),T.intValue(),R.intValue(),B.intValue());
+        canvas.drawRect(r, mpaint);
+        surfaceHolder.unlockCanvasAndPost(canvas);
+
+    }
+
+
+
+//抓框框
+    public static Bitmap GET_IMG(Bitmap bmp, int w, int h,int tmp) {
+        int width = bmp.getWidth();
+        int height = bmp.getHeight();
+        int[] pixels = new int[width * height];
+        bmp.getPixels(pixels, 0, width, 0, 0, width, height);
+        int alpha = 0xFF << 24;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int grey = pixels[width * i + j];
+                // 分離三原色
+                alpha = ((grey & 0xFF000000) >> 24);
+                int red = ((grey & 0x00FF0000) >> 16);
+                int green = ((grey & 0x0000FF00) >> 8);
+                int blue = (grey & 0x000000FF);
+                if (red > tmp) {
+                    red = 255;
+                } else {
+                    red = 0;
+                }
+                if (blue > tmp) {
+                    blue = 255;
+                } else {
+                    blue = 0;
+                }
+                if (green > tmp) {
+                    green = 255;
+                } else {
+                    green = 0;
+                }
+                pixels[width * i + j] = alpha << 24 | red << 16 | green << 8
+                        | blue;
+                if (pixels[width * i + j] == -1) {
+                    pixels[width * i + j] = -1;
+                } else {
+                    pixels[width * i + j] = -16777216;
+                }
+            }
+        }
+
 
 }
