@@ -1,5 +1,10 @@
 # OCR_TEST
 
+有個特殊分支:
+    QR-code-OCR
+這個分支是運用QR code的定位點抓取OCR的辨識範圍的(僅限即時抓圖娜裡(ㄧ個簡陋的眼睛圖案按鈕))
+
+
 # This is based on the tesseract-ocr
 
 
