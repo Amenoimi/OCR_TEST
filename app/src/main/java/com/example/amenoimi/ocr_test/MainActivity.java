@@ -339,11 +339,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
     // 剪裁 Bitmap 會依照新的大小 自動至中剪裁
     public Bitmap Crop_Bitmap_rect (Bitmap input,int x,int y,int re_width, int re_height) {
-        Log.d(" Crop_Bitmap_rect", "x" + x);
-        Log.d(" Crop_Bitmap_rect", "y" + y);
-        Log.d(" Crop_Bitmap_rect", "rw" + re_width);
-        Log.d(" Crop_Bitmap_rect", "rh" + re_height);
-        return Bitmap.createBitmap(input, x , y, re_width, re_height);
+            Log.d(" Crop_Bitmap_rect", "x" + x);
+            Log.d(" Crop_Bitmap_rect", "y" + y);
+            Log.d(" Crop_Bitmap_rect", "rw" + re_width);
+            Log.d(" Crop_Bitmap_rect", "rh" + re_height);
+            return Bitmap.createBitmap(input, x , y, re_width, re_height);
+
     }
 
     /**
@@ -382,51 +383,26 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
 
-                    int[] tmp=find_box(new_bitmap,20, 20);
+//                    int[] tmp=find_box(new_bitmap,20, 20);
+//                    Log.d("rrrl", String.valueOf(tmp[0]));
+//                    Log.d("rrrt", String.valueOf(tmp[1]));
+//                    Log.d("rrrr", String.valueOf(tmp[2]));
+//                    Log.d("rrrb", String.valueOf(tmp[3]));
+//                    Rect rect = null;
+//                    surfaceDrawing(mSurfaceView2.getHolder(), tmp[0]*1.5, tmp[1]*1.36770833333, tmp[0]+tmp[2]*1.5, tmp[1]+tmp[3]*1.36770833333);
 
-                    Rect rect = null;
+//                    mSurfaceView.setVisibility(View.GONE);
+//                    imgSrc.setVisibility(View.VISIBLE);
+//                    imgSrc.setImageBitmap(convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100));
 
-                    if(tmp[0]>0&&tmp[1]>0&& tmp[2]>0&&tmp[3]>0) {
-                        Log.d("rl", String.valueOf(tmp[0]));
-                        Log.d("rt", String.valueOf(tmp[1]));
-                        Log.d("rr", String.valueOf(tmp[2]));
-                        Log.d("rb", String.valueOf(tmp[3]));
-                        rect.left=tmp[0];
-                        rect.top=tmp[1];
-                        rect.right=tmp[0]+tmp[2];
-                        rect.bottom=tmp[1]+tmp[3];
-                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.left,rect.top, rect.right,rect.bottom);
-                        mSurfaceView.setVisibility(View.GONE);
-                        imgSrc.setVisibility(View.VISIBLE);
-                        imgSrc.setImageBitmap(new_bitmap);
-                        Log.d("QQ", "C");
-                        QR_code_bool=true;
-                        f=false;
-                        b4.setBackgroundResource(R.drawable.unsee);
-                    }else{
-//                        new_bitmap=null;
-                        QR_code_bool=false;
-                    }
-
-
-
-
-//                    CV4JImage cv4JImage = new CV4JImage(new_bitmap);
-//                    ImageProcessor img= cv4JImage.getProcessor();
 //
-//                    Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
-//                    Log.d("GAN", String.valueOf(mSurfaceView2.getHeight()));
+//                    if(tmp[0]>0&&tmp[1]>0&& tmp[2]>0&&tmp[3]>0) {
 //
-//                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 6);
-//                    Log.d("OUO(GAN((tx", String.valueOf(rect.tl().x));
-//                    Log.d("OUO(GAN((ty", String.valueOf(rect.tl().y));
-//                    Log.d("OUO(GAN((bx", String.valueOf(rect.br().x));
-//                    Log.d("OUO(GAN((by", String.valueOf(rect.br().y));
-//                    surfaceDrawing(mSurfaceView2.getHolder(), rect.tl().x*1.5, rect.tl().y*1.36770833333, rect.br().x*1.5, rect.br().y*1.36770833333);
-//
-//                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0) {
-//                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.tl().x, rect.tl().y, Math.abs(rect.br().x-rect.tl().x ),Math.abs(rect.br().y-rect.tl().y));
-//                        new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),140);
+//                        rect.left=tmp[0];
+//                        rect.top=tmp[1];
+//                        rect.right=tmp[0]+tmp[2];
+//                        rect.bottom=tmp[1]+tmp[3];
+//                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.left,rect.top, rect.right,rect.bottom);
 //                        mSurfaceView.setVisibility(View.GONE);
 //                        imgSrc.setVisibility(View.VISIBLE);
 //                        imgSrc.setImageBitmap(new_bitmap);
@@ -435,9 +411,74 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 //                        f=false;
 //                        b4.setBackgroundResource(R.drawable.unsee);
 //                    }else{
-////                        new_bitmap=null;
 //                        QR_code_bool=false;
 //                    }
+
+
+
+
+//
+//                    CV4JImage cv4JImage = new CV4JImage(new_bitmap);
+//                    ImageProcessor img= cv4JImage.getProcessor();
+//                    Threshold threshold = new Threshold();
+//                    threshold.process((ByteProcessor)(cv4JImage.convert2Gray().getProcessor()),Threshold.THRESH_TRIANGLE,Threshold.METHOD_THRESH_BINARY_INV,255);
+//                    MorphOpen morphOpen = new MorphOpen();
+//                    cv4JImage.resetBitmap();
+//                    morphOpen.process((ByteProcessor)cv4JImage.getProcessor(),new Size(5));
+//
+//                    ConnectedAreaLabel connectedAreaLabel = new ConnectedAreaLabel();
+//                    int[] mask = new int[cv4JImage.getProcessor().getWidth() * cv4JImage.getProcessor().getHeight()];
+//                    List<com.cv4j.core.datamodel.Rect> rectangles = new ArrayList<>();
+//                    connectedAreaLabel.process((ByteProcessor)cv4JImage.getProcessor(), mask,rectangles,true);
+//                    cv4JImage.resetBitmap();
+//                    new_bitmap = cv4JImage.getProcessor().getImage().toBitmap();
+//
+//                    if (Preconditions.isNotBlank(rectangles)) {
+//                        Tools.drawRects(new_bitmap,rectangles);
+//                        new_bitmap=ARGBBitmap(new_bitmap);
+//                        mSurfaceView.setVisibility(View.GONE);
+//                        imgSrc.setVisibility(View.VISIBLE);
+//                        imgSrc.setImageBitmap(new_bitmap);
+//                        Log.d("QQ", "C");
+//                        QR_code_bool = true;
+//                        f = false;
+//                        b4.setBackgroundResource(R.drawable.unsee);
+//                    }else{
+//                        QR_code_bool = false;
+//                    }
+
+
+
+
+
+
+
+                    CV4JImage cv4JImage = new CV4JImage(new_bitmap);
+                    ImageProcessor img= cv4JImage.getProcessor();
+
+                    Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
+                    Log.d("GAN", String.valueOf(mSurfaceView2.getHeight()));
+
+                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 5);
+                    Log.d("OUO(GAN((tx", String.valueOf(rect.tl().x));
+                    Log.d("OUO(GAN((ty", String.valueOf(rect.tl().y));
+                    Log.d("OUO(GAN((bx", String.valueOf(rect.br().x));
+                    Log.d("OUO(GAN((by", String.valueOf(rect.br().y));
+                    surfaceDrawing(mSurfaceView2.getHolder(), rect.tl().x*1.5, rect.tl().y*1.36770833333, rect.br().x*1.5, rect.br().y*1.36770833333);
+
+                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0&&rect.br().x<new_bitmap.getWidth()&&rect.br().y<new_bitmap.getHeight()&&Math.abs(Math.abs(rect.br().x)-Math.abs(rect.tl().x) )>100&&Math.abs(Math.abs(rect.br().y)-Math.abs(rect.tl().y))>100) {
+                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.tl().x, rect.tl().y, Math.abs(Math.abs(rect.br().x)-Math.abs(rect.tl().x) ),Math.abs(Math.abs(rect.br().y)-Math.abs(rect.tl().y)));
+                        new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100);
+                        mSurfaceView.setVisibility(View.GONE);
+                        imgSrc.setVisibility(View.VISIBLE);
+                        imgSrc.setImageBitmap(new_bitmap);
+                        Log.d("QQ", "C");
+                        QR_code_bool=true;
+                        f=false;
+                        b4.setBackgroundResource(R.drawable.unsee);
+                    }else{
+                        QR_code_bool=false;
+                    }
                     image.close();
                 }
             }
@@ -457,6 +498,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private Bitmap ARGBBitmap(Bitmap img) {
+        return img.copy(Bitmap.Config.ARGB_8888,true);
     }
 
     /**
@@ -1354,7 +1399,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         int fx=-1, fy=-1, fw=-1, fh=-1;
         int width = img.getWidth();
         int height = img.getHeight();
-        img= convertToBMW(img,width,height,140);
+        img= convertToBMW(img,width,height,100);
         // 由上往下 找 x,y width
         for (int y=0; y<height; y++) {
             int tpx = -1;
