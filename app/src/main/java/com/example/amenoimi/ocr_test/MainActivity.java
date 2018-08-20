@@ -1360,10 +1360,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             int tpx = -1;
             int count = 0;
             int px = 0;
+            int red, green, blue;
             for (int x=0; x<width; x++) {
                 px = img.getPixel(x, y);
-//                Log.d("ppx", String.valueOf(px));
-                if (px ==-1) {
+                red = Color.red(px);
+                green = Color.green(px);
+                blue = Color.blue(px);
+                if ( (red == 0)&&(green == 0)&&(blue == 0) ) {
                     count++;
                     tpx = x;
                 }
@@ -1382,9 +1385,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             for (int x= ((fx - 10) > 0)? fx-10:0; x<width; x++) {
                 int count = 0;
                 int px = 0;
+                int red, green, blue;
                 for (int y=0; y<height; y++) {
                     px = img.getPixel(x, y);
-                    if (px < 10) {
+                    red = Color.red(px);
+                    green = Color.green(px);
+                    blue = Color.blue(px);
+                    if ( (red == 0)&&(green == 0)&&(blue == 0) ) {
                         count++;
                     }
                 }
