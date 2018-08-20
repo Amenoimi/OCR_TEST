@@ -343,6 +343,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             Log.d(" Crop_Bitmap_rect", "y" + y);
             Log.d(" Crop_Bitmap_rect", "rw" + re_width);
             Log.d(" Crop_Bitmap_rect", "rh" + re_height);
+            int tmp;
             return Bitmap.createBitmap(input, x , y, re_width, re_height);
 
     }
@@ -377,10 +378,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     new_bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
                     Log.d("GAN", String.valueOf(new_bitmap.getWidth()));
                     Log.d("GAN", String.valueOf(new_bitmap.getHeight()));
-
-//                    new_bitmap=Crop_Bitmap (new_bitmap, new_bitmap.getWidth(), new_bitmap.getHeight()/3);
-
-
 
 
 //                    int[] tmp=find_box(new_bitmap,20, 20);
@@ -459,15 +456,18 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
                     Log.d("GAN", String.valueOf(mSurfaceView2.getHeight()));
 
-                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 5);
+                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 6);
                     Log.d("OUO(GAN((tx", String.valueOf(rect.tl().x));
                     Log.d("OUO(GAN((ty", String.valueOf(rect.tl().y));
                     Log.d("OUO(GAN((bx", String.valueOf(rect.br().x));
                     Log.d("OUO(GAN((by", String.valueOf(rect.br().y));
                     surfaceDrawing(mSurfaceView2.getHolder(), rect.tl().x*1.5, rect.tl().y*1.36770833333, rect.br().x*1.5, rect.br().y*1.36770833333);
 
-                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0&&rect.br().x<new_bitmap.getWidth()&&rect.br().y<new_bitmap.getHeight()&&Math.abs(Math.abs(rect.br().x)-Math.abs(rect.tl().x) )>100&&Math.abs(Math.abs(rect.br().y)-Math.abs(rect.tl().y))>100) {
-                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.tl().x, rect.tl().y, Math.abs(Math.abs(rect.br().x)-Math.abs(rect.tl().x) ),Math.abs(Math.abs(rect.br().y)-Math.abs(rect.tl().y)));
+                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0&&rect.br().x<new_bitmap.getWidth()&&rect.br().y<new_bitmap.getHeight()&&Math.abs(rect.br().x-rect.tl().x)>100&&Math.abs(rect.br().y-rect.tl().y)>100) {
+                        Log.d("OAO(GAN((w", String.valueOf( Math.abs(rect.br().x-rect.tl().x )));
+                        Log.d("OAO(GAN((h", String.valueOf(Math.abs(rect.br().y-rect.tl().y)));
+
+                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.x, rect.y, Math.abs(rect.br().x-rect.x ),Math.abs(rect.br().y-rect.y));//這個地方怪怪的
                         new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100);
                         mSurfaceView.setVisibility(View.GONE);
                         imgSrc.setVisibility(View.VISIBLE);
