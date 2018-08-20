@@ -378,22 +378,24 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     Log.d("GAN", String.valueOf(new_bitmap.getHeight()));
 
 //                    new_bitmap=Crop_Bitmap (new_bitmap, new_bitmap.getWidth(), new_bitmap.getHeight()/3);
-                    CV4JImage cv4JImage = new CV4JImage(new_bitmap);
-                    ImageProcessor img= cv4JImage.getProcessor();
 
-                    Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
-                    Log.d("GAN", String.valueOf(mSurfaceView2.getHeight()));
 
-                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 6);
-                    Log.d("OUO(GAN((tx", String.valueOf(rect.tl().x));
-                    Log.d("OUO(GAN((ty", String.valueOf(rect.tl().y));
-                    Log.d("OUO(GAN((bx", String.valueOf(rect.br().x));
-                    Log.d("OUO(GAN((by", String.valueOf(rect.br().y));
-                    surfaceDrawing(mSurfaceView2.getHolder(), rect.tl().x*1.5, rect.tl().y*1.36770833333, rect.br().x*1.5, rect.br().y*1.36770833333);
 
-                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0) {
-                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.tl().x, rect.tl().y, Math.abs(rect.br().x-rect.tl().x ),Math.abs(rect.br().y-rect.tl().y));
-                        new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),140);
+
+                    int[] tmp=find_box(new_bitmap,20, 20);
+
+                    Rect rect = null;
+
+                    if(tmp[0]>0&&tmp[1]>0&& tmp[2]>0&&tmp[3]>0) {
+                        Log.d("rl", String.valueOf(tmp[0]));
+                        Log.d("rt", String.valueOf(tmp[1]));
+                        Log.d("rr", String.valueOf(tmp[2]));
+                        Log.d("rb", String.valueOf(tmp[3]));
+                        rect.left=tmp[0];
+                        rect.top=tmp[1];
+                        rect.right=tmp[0]+tmp[2];
+                        rect.bottom=tmp[1]+tmp[3];
+                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.left,rect.top, rect.right,rect.bottom);
                         mSurfaceView.setVisibility(View.GONE);
                         imgSrc.setVisibility(View.VISIBLE);
                         imgSrc.setImageBitmap(new_bitmap);
@@ -405,6 +407,37 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 //                        new_bitmap=null;
                         QR_code_bool=false;
                     }
+
+
+
+
+//                    CV4JImage cv4JImage = new CV4JImage(new_bitmap);
+//                    ImageProcessor img= cv4JImage.getProcessor();
+//
+//                    Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
+//                    Log.d("GAN", String.valueOf(mSurfaceView2.getHeight()));
+//
+//                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 6);
+//                    Log.d("OUO(GAN((tx", String.valueOf(rect.tl().x));
+//                    Log.d("OUO(GAN((ty", String.valueOf(rect.tl().y));
+//                    Log.d("OUO(GAN((bx", String.valueOf(rect.br().x));
+//                    Log.d("OUO(GAN((by", String.valueOf(rect.br().y));
+//                    surfaceDrawing(mSurfaceView2.getHolder(), rect.tl().x*1.5, rect.tl().y*1.36770833333, rect.br().x*1.5, rect.br().y*1.36770833333);
+//
+//                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0) {
+//                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.tl().x, rect.tl().y, Math.abs(rect.br().x-rect.tl().x ),Math.abs(rect.br().y-rect.tl().y));
+//                        new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),140);
+//                        mSurfaceView.setVisibility(View.GONE);
+//                        imgSrc.setVisibility(View.VISIBLE);
+//                        imgSrc.setImageBitmap(new_bitmap);
+//                        Log.d("QQ", "C");
+//                        QR_code_bool=true;
+//                        f=false;
+//                        b4.setBackgroundResource(R.drawable.unsee);
+//                    }else{
+////                        new_bitmap=null;
+//                        QR_code_bool=false;
+//                    }
                     image.close();
                 }
             }
@@ -1315,57 +1348,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
 
-    public static Bitmap GET_IMG(Bitmap bmp, int w, int h,int tmp) {
-        int width = bmp.getWidth();
-        int height = bmp.getHeight();
-        int[] pixels = new int[width * height];
-        bmp.getPixels(pixels, 0, width, 0, 0, width, height);
-        int alpha = 0xFF << 24;
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                int grey = pixels[width * i + j];
-                // 分離三原色
-                alpha = ((grey & 0xFF000000) >> 24);
-                int red = ((grey & 0x00FF0000) >> 16);
-                int green = ((grey & 0x0000FF00) >> 8);
-                int blue = (grey & 0x000000FF);
-                if (red > tmp) {
-                    red = 255;
-                } else {
-                    red = 0;
-                }
-                if (blue > tmp) {
-                    blue = 255;
-                } else {
-                    blue = 0;
-                }
-                if (green > tmp) {
-                    green = 255;
-                } else {
-                    green = 0;
-                }
-                pixels[width * i + j] = alpha << 24 | red << 16 | green << 8
-                        | blue;
-                if (pixels[width * i + j] == -1) {
-                    pixels[width * i + j] = -1;
-                } else {
-                    pixels[width * i + j] = -16777216;
-                }
-            }
-        }
-        Bitmap newBmp = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        newBmp.setPixels(pixels, 0, width, 0, 0, width, height);
-        Bitmap resizeBmp = ThumbnailUtils.extractThumbnail(newBmp, w, h);
-        return resizeBmp;
-    }
-
     // 找框線  原圖, 框線大小相對於原圖的百分比 width, height
     public int [] find_box(Bitmap img, int box_width_proportion, int box_height_proportion) {
 
         int fx=-1, fy=-1, fw=-1, fh=-1;
         int width = img.getWidth();
         int height = img.getHeight();
-
+        img= convertToBMW(img,width,height,140);
         // 由上往下 找 x,y width
         for (int y=0; y<height; y++) {
             int tpx = -1;
@@ -1373,7 +1362,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             int px = 0;
             for (int x=0; x<width; x++) {
                 px = img.getPixel(x, y);
-                if (px < 10) {
+//                Log.d("ppx", String.valueOf(px));
+                if (px ==-1) {
                     count++;
                     tpx = x;
                 }
