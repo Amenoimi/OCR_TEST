@@ -1359,6 +1359,56 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         return resizeBmp;
     }
 
+    // 找框線  原圖, 框線大小相對於原圖的百分比 width, height
+    public int [] find_box(Bitmap img, int box_width_proportion, int box_height_proportion) {
+
+        int fx=-1, fy=-1, fw=-1, fh=-1;
+        int width = img.getWidth();
+        int height = img.getHeight();
+
+        // 由上往下 找 x,y width
+        for (int y=0; y<height; y++) {
+            int tpx = -1;
+            int count = 0;
+            int px = 0;
+            for (int x=0; x<width; x++) {
+                px = img.getPixel(x, y);
+                if (px < 10) {
+                    count++;
+                    tpx = x;
+                }
+            }
+            if ( (count / width) >= box_width_proportion ) {
+                fx = tpx;
+                fy = y;
+                fw = count;
+                break;
+            }
+        }
+
+        // 有找到 x,y 的話開始找 height 由左到右
+        if (fx != -1) {
+
+            for (int x= ((fx - 10) > 0)? fx-10:0; x<width; x++) {
+                int count = 0;
+                int px = 0;
+                for (int y=0; y<height; y++) {
+                    px = img.getPixel(x, y);
+                    if (px < 10) {
+                        count++;
+                    }
+                }
+                if ( (count / height) >= box_height_proportion ) {
+                    fh = count;
+                    break;
+                }
+            }
+
+        }
+
+        return new int[] {fx, fy, fw, fh};
+    }
+
 
 
 
