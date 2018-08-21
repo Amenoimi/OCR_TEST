@@ -469,12 +469,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     Log.d("OUO(GAN((th", String.valueOf(rect.br().y));
                     if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0&&rect.br().x<new_bitmap.getWidth()&&rect.br().y<new_bitmap.getHeight()&&Math.abs( rect.width)>100&&Math.abs( rect.height)>100&&rect.br().x+rect.tl().x<new_bitmap.getWidth()) {
 
-                        new_bitmap = Crop_Bitmap_rect(new_bitmap, (rect.br().x), rect.br().y,rect.tl().x,rect.tl().y);//這個地方怪怪的
+                        new_bitmap = Crop_Bitmap_rect(new_bitmap, (rect.br().x), rect.tl().y,rect.tl().x,rect.br().y);//這個地方怪怪的
                         new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100);
                         mSurfaceView.setVisibility(View.GONE);
                         imgSrc.setVisibility(View.VISIBLE);
                         imgSrc.setImageBitmap(new_bitmap);
                         Log.d("QQ", "C");
+                        surfaceDrawing(mSurfaceView2.getHolder(), 0.0, 0.0, 0.0, 0.0);
                         QR_code_bool=true;
                         f=false;
                         b4.setBackgroundResource(R.drawable.unsee);
