@@ -371,7 +371,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 buffer.get(bytes);//由缓冲区存入字节数组
                 final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
 //                QR_code_bool=false;
-                if (bitmap != null) {
+                if (bitmap != null &&QR_code_bool==false) {
 
                     Matrix matrix  = new Matrix();
                     matrix.setRotate(90);
@@ -456,18 +456,19 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
                     Log.d("GAN", String.valueOf(mSurfaceView2.getHeight()));
 
-                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 6);
+                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 1);
+                    Log.d("OUO(GAN((x", String.valueOf(rect.x));
+                    Log.d("OUO(GAN((y", String.valueOf(rect.y));
+                    Log.d("OUO(GAN((w", String.valueOf(rect.width));
+                    Log.d("OUO(GAN((h", String.valueOf(rect.height));
+                    surfaceDrawing(mSurfaceView2.getHolder(), rect.br().x*1.5, rect.tl().y*1.36770833333, rect.tl().x*1.5, rect.br().y*1.36770833333);
                     Log.d("OUO(GAN((tx", String.valueOf(rect.tl().x));
                     Log.d("OUO(GAN((ty", String.valueOf(rect.tl().y));
-                    Log.d("OUO(GAN((bx", String.valueOf(rect.br().x));
-                    Log.d("OUO(GAN((by", String.valueOf(rect.br().y));
-                    surfaceDrawing(mSurfaceView2.getHolder(), rect.tl().x*1.5, rect.tl().y*1.36770833333, rect.br().x*1.5, rect.br().y*1.36770833333);
+                    Log.d("OUO(GAN((tw", String.valueOf(rect.br().x));
+                    Log.d("OUO(GAN((th", String.valueOf(rect.br().y));
+                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0&&rect.br().x<new_bitmap.getWidth()&&rect.br().y<new_bitmap.getHeight()&&Math.abs( rect.width)>100&&Math.abs( rect.height)>100&&rect.br().x+rect.tl().x<new_bitmap.getWidth()) {
 
-                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0&&rect.br().x<new_bitmap.getWidth()&&rect.br().y<new_bitmap.getHeight()&&Math.abs(rect.br().x-rect.tl().x)>100&&Math.abs(rect.br().y-rect.tl().y)>100) {
-                        Log.d("OAO(GAN((w", String.valueOf( Math.abs(rect.br().x-rect.tl().x )));
-                        Log.d("OAO(GAN((h", String.valueOf(Math.abs(rect.br().y-rect.tl().y)));
-
-                        new_bitmap = Crop_Bitmap_rect(new_bitmap, rect.x, rect.y, Math.abs(rect.br().x-rect.x ),Math.abs(rect.br().y-rect.y));//這個地方怪怪的
+                        new_bitmap = Crop_Bitmap_rect(new_bitmap, (rect.br().x), rect.br().y,rect.tl().x,rect.tl().y);//這個地方怪怪的
                         new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100);
                         mSurfaceView.setVisibility(View.GONE);
                         imgSrc.setVisibility(View.VISIBLE);
@@ -476,8 +477,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         QR_code_bool=true;
                         f=false;
                         b4.setBackgroundResource(R.drawable.unsee);
-                    }else{
-                        QR_code_bool=false;
                     }
                     image.close();
                 }
