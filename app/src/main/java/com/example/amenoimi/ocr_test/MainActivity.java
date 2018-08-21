@@ -337,15 +337,16 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         Log.d("ABC", "rh" + re_height);
         return Bitmap.createBitmap(input, (w - re_width) / 2, (h - re_height) / 2, re_width, re_height);
     }
-    // 剪裁 Bitmap 會依照新的大小 自動至中剪裁
-    public Bitmap Crop_Bitmap_rect (Bitmap input,int x,int y,int re_width, int re_height) {
-            Log.d(" Crop_Bitmap_rect", "x" + x);
-            Log.d(" Crop_Bitmap_rect", "y" + y);
-            Log.d(" Crop_Bitmap_rect", "rw" + re_width);
-            Log.d(" Crop_Bitmap_rect", "rh" + re_height);
-            int tmp;
-            return Bitmap.createBitmap(input, x , y, re_width, re_height);
-
+    // 剪裁 Bitmap 會依照新的座標進行剪裁
+    public Bitmap Crop_Bitmap_rect (Bitmap input,int x,int y,int stop_x, int stop_y) {
+        Log.d(" Crop_Bitmap_rect", "x" + x);
+        Log.d(" Crop_Bitmap_rect", "y" + y);
+        Log.d(" Crop_Bitmap_rect", "x2" + stop_x);
+        Log.d(" Crop_Bitmap_rect", "y2" + stop_y);
+        if (x < stop_x)
+            return Bitmap.createBitmap(input, x , y, stop_x - x, stop_y - y);
+        else
+            return Bitmap.createBitmap(input, stop_x , stop_y, x - stop_x, y - stop_y);
     }
 
     /**
