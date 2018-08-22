@@ -344,9 +344,17 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         Log.d(" Crop_Bitmap_rect", "x2" + stop_x);
         Log.d(" Crop_Bitmap_rect", "y2" + stop_y);
         if (x < stop_x)
-            return Bitmap.createBitmap(input, x , y, stop_x - x, stop_y - y);
+            if (y < stop_y)
+                return Bitmap.createBitmap(input, x, y, stop_x - x, stop_y - y);
+            else
+                return Bitmap.createBitmap(input, x, stop_y, stop_x - x, y - stop_y);
+
         else
-            return Bitmap.createBitmap(input, stop_x , stop_y, x - stop_x, y - stop_y);
+        if (y < stop_y)
+            return Bitmap.createBitmap(input, stop_x, y, x - stop_x, stop_y - y);
+        else
+            return Bitmap.createBitmap(input, stop_x, stop_y, x - stop_x, y - stop_y);
+
     }
 
     /**
@@ -451,7 +459,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 
 
-                    CV4JImage cv4JImage = new CV4JImage(new_bitmap);
+                    CV4JImage cv4JImage = new CV4JImage(convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100));
                     ImageProcessor img= cv4JImage.getProcessor();
 
                     Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
@@ -480,6 +488,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         f=false;
                         b4.setBackgroundResource(R.drawable.unsee);
                     }
+                    image
                     image.close();
                 }
             }
@@ -635,7 +644,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if (now_ocr < 1 && areWeFocused && Focus_distance>3) {
+                    if (now_ocr < 1  ) {//&& areWeFocused&& Focus_distance>3
                         now_ocr = 1;
                         takePicture();
                         while (new_bitmap == null && QR_code_bool==false) {
@@ -643,18 +652,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         }
                         Message msg = mHandler.obtainMessage();
                         msg.obj = null;
-                        //                            msg.what = 1;
-//                        BitMatrix QR_bitmap=new BitMatrix(new_bitmap.getWidth(),new_bitmap.getHeight(),new_bitmap.getDensity(),new_bitmap.getNinePatchChunk());
-//                        new AlignmentPatternFinder(new_bitmap,0,0,new_bitmap.getWidth(),new_bitmap.getHeight());
 
-//                        Bitmap.createScaledBitmap(new_bitmap, 960, 480, false);
+                        msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
+                        QR_code_bool=false;
+                        while (msg.obj == null) {
 
-
-                            msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
-                            QR_code_bool=false;
-                            while (msg.obj == null) {
-
-                            }
+                        }
                             Log.d("QQ", msg.obj.toString());
                             msg.setTarget(mHandler); // Set the Handler
                             msg.sendToTarget();
@@ -664,7 +667,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     }
                 }else if(img_or_video_mode==2){
                     takePicture();
-                    while (new_bitmap == null) {
+                    while (new_bitmap == null&& QR_code_bool==false) {
 
                     }
                     Message msg = mHandler.obtainMessage();
