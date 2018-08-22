@@ -488,7 +488,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         f=false;
                         b4.setBackgroundResource(R.drawable.unsee);
                     }
-                    image
+
                     image.close();
                 }
             }
