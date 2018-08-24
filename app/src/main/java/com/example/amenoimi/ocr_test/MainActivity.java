@@ -151,6 +151,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     public Float Focus_distance;
     public Boolean QR_code_bool=false;
 
+    public com.cv4j.core.datamodel.Rect[] rerect=null;
+
+
     public static String[] resizeArray(String[] arrayToResize, int size) {
         // create a new array twice the size
         String[] newArray = new String[size];
@@ -644,7 +647,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if (now_ocr < 1  ) {//&& areWeFocused&& Focus_distance>3
+                    if (now_ocr < 1&& Focus_distance>3  ) {//&& areWeFocused
                         now_ocr = 1;
                         takePicture();
                         while (new_bitmap == null && QR_code_bool==false) {
@@ -652,6 +655,15 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         }
                         Message msg = mHandler.obtainMessage();
                         msg.obj = null;
+                        if(rerect!=null){
+                            if(rerect.length>2){
+                                for(int i=0;i<rerect.length;i++)
+                                    Log.d("rerect["+i+"]","h"+ String.valueOf(rerect[i].height)+"w"+ String.valueOf(rerect[i].width)+"x"+String.valueOf(rerect[i].x)+"y"+String.valueOf(rerect[i].y));
+                                if(rerect[0].height>rerect[1].height||rerect[0].height>rerect[2].height){//上面近
+
+                                }
+                            }
+                        }
 
                         msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
                         QR_code_bool=false;
@@ -1320,6 +1332,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             rect.width = 0;
             rect.height = 0;
         }
+        rerect=blocks;
         return rect;
     }
 
