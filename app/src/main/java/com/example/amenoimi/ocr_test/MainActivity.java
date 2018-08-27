@@ -482,6 +482,24 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
                         new_bitmap = Crop_Bitmap_rect(new_bitmap, (rect.br().x), rect.tl().y,rect.tl().x,rect.br().y);//這個地方怪怪的
                         new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100);
+
+//                        if(rerect!=null){
+//                            if(rerect.length>2){
+//                                for(int i=0;i<rerect.length;i++)
+//                                    Log.d("rerect["+i+"]","h"+ String.valueOf(rerect[i].height)+"w"+ String.valueOf(rerect[i].width)+"x"+String.valueOf(rerect[i].x)+"y"+String.valueOf(rerect[i].y));
+//                                if(rerect[0].height>rerect[1].height||rerect[0].height>rerect[2].height){//上面近
+//                                    new_bitmap=skewImage(new_bitmap,0.03,0.03);
+//                                }
+//                                if(rerect[1].height>rerect[0].height||rerect[1].height>rerect[2].height){//左下面近
+//                                    new_bitmap=skewImage(new_bitmap,-0.03,-0.03);
+//                                }
+//                                if(rerect[2].height>rerect[1].height||rerect[2].height>rerect[0].height){//右下面近
+//                                    new_bitmap=skewImage(new_bitmap,0.03,-0.03);
+//                                }
+//
+//                            }
+//                        }
+
                         mSurfaceView.setVisibility(View.GONE);
                         imgSrc.setVisibility(View.VISIBLE);
                         imgSrc.setImageBitmap(new_bitmap);
@@ -655,15 +673,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         }
                         Message msg = mHandler.obtainMessage();
                         msg.obj = null;
-                        if(rerect!=null){
-                            if(rerect.length>2){
-                                for(int i=0;i<rerect.length;i++)
-                                    Log.d("rerect["+i+"]","h"+ String.valueOf(rerect[i].height)+"w"+ String.valueOf(rerect[i].width)+"x"+String.valueOf(rerect[i].x)+"y"+String.valueOf(rerect[i].y));
-                                if(rerect[0].height>rerect[1].height||rerect[0].height>rerect[2].height){//上面近
 
-                                }
-                            }
-                        }
 
                         msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
                         QR_code_bool=false;
@@ -1468,7 +1478,25 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         return new int[] {fx, fy, fw, fh};
     }
 
+    private Bitmap skewImage(Bitmap originalBitmap,double xSkew, double ySkew)
+    {
+        // According to the skew ratio of the picture, calculate the size of the image after the transformation.
+        int xAfterSkew = (int)(originalBitmap.getWidth() * (1 + xSkew));
+        int yAfterSkew = (int)(originalBitmap.getHeight() * (1 + ySkew));
 
+        Bitmap skewBitmap = Bitmap.createBitmap(xAfterSkew, yAfterSkew, originalBitmap.getConfig());
+
+        Canvas skewCanvas = new Canvas(skewBitmap);
+
+        Matrix skewMatrix = new Matrix();
+
+        // Set x y skew value.
+        skewMatrix.setSkew((float)xSkew, (float)ySkew, originalBitmap.getWidth()/2, originalBitmap.getHeight()/2);
+
+        Paint paint = new Paint();
+        skewCanvas.drawBitmap(originalBitmap, skewMatrix, paint);
+       return skewBitmap;
+    }
 
 
 }
