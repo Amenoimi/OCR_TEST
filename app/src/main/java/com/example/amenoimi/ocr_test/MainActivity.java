@@ -134,6 +134,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     private SurfaceHolder mSurfaceHolder;
     private SurfaceView mSurfaceView2 ;
     private SurfaceHolder mSurfaceHolder2 ;
+    private boolean surfaceDrawing_flag = false;
 
 
     private CameraManager mCameraManager;//摄像头管理器
@@ -1063,22 +1064,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     @Override
     public void surfaceCreated(SurfaceHolder surfaceHolder) {
-        //定义画笔
-        Paint mpaint = new Paint();
-        mpaint.setColor(Color.BLUE);
-        // mpaint.setAntiAlias(true);//去锯齿
-        mpaint.setStyle(Paint.Style.STROKE);//空心
-        // 设置paint的外框宽度
-        mpaint.setStrokeWidth(20f);
-
-        Canvas canvas=new Canvas();
-
-        canvas =  surfaceHolder.lockCanvas();
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //清楚掉上一次的画框。
-        Rect r = new Rect(0,0,0,0);
-        canvas.drawRect(r, mpaint);
-        surfaceHolder.unlockCanvasAndPost(canvas);
-
+        surfaceDrawing_flag = true;
     }
 
     @Override
@@ -1088,7 +1074,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     @Override
     public void surfaceDestroyed(SurfaceHolder surfaceHolder) {
-
+        surfaceDrawing_flag = false;
     }
 
 
@@ -1400,22 +1386,23 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
     }
 
     public void surfaceDrawing(SurfaceHolder surfaceHolder, Double L, Double T, Double R, Double B) {
-        //定义画笔
-        Paint mpaint = new Paint();
-        mpaint.setColor(Color.BLUE);
-        // mpaint.setAntiAlias(true);//去锯齿
-        mpaint.setStyle(Paint.Style.STROKE);//空心
-        // 设置paint的外框宽度
-        mpaint.setStrokeWidth(20f);
+        if (surfaceDrawing_flag) {
+            //定义画笔
+            Paint mpaint = new Paint();
+            mpaint.setColor(Color.BLUE);
+            // mpaint.setAntiAlias(true);//去锯齿
+            mpaint.setStyle(Paint.Style.STROKE);//空心
+            // 设置paint的外框宽度
+            mpaint.setStrokeWidth(20f);
 
-        Canvas canvas=new Canvas();
+            Canvas canvas=new Canvas();
 
-        canvas =  surfaceHolder.lockCanvas();
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //清楚掉上一次的画框。
-        Rect r = new Rect(  L.intValue(),T.intValue(),R.intValue(),B.intValue());
-        canvas.drawRect(r, mpaint);
-        surfaceHolder.unlockCanvasAndPost(canvas);
-
+            canvas =  surfaceHolder.lockCanvas();
+            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //清楚掉上一次的画框。
+            Rect r = new Rect(  L.intValue(),T.intValue(),R.intValue(),B.intValue());
+            canvas.drawRect(r, mpaint);
+            surfaceHolder.unlockCanvasAndPost(canvas);
+        }
     }
 
 
