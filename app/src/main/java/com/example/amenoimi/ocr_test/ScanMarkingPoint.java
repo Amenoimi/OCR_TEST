@@ -17,7 +17,7 @@ public class ScanMarkingPoint {
     private Paint p;
 
     ScanMarkingPoint() {
-        // 距離上 距離下 範圍長 範圍寬 小正方形長寬(依照寬度比例)
+        // 距離左 距離上 範圍寬 範圍高 小正方形長寬(依照寬度比例)
         this.config = new float[] {0.25f, 0.25f, 0.5f, 0.5f, 0.1f};
 
         this.p = new Paint();
@@ -57,15 +57,15 @@ public class ScanMarkingPoint {
         ScreenTarget.drawRect(right - mw, bottom - mh, right, bottom, p);
     }
 
-    public boolean findrect(Bitmap ScanTarget) {
-        int w = ScanTarget.getWidth();
-        int h = ScanTarget.getHeight();
+    public boolean findrect(Bitmap ScanTarget, int[] scale_error) {
+        int w = ScanTarget.getWidth() * scale_error[0];
+        int h = ScanTarget.getHeight() * scale_error[1];
 
         int mw = (int)(w * this.config[4]);
         int mh = mw;
 
         int left = (int)(w * this.config[0]);
-        int top = h * this.config[0]);
+        int top = (int)(h * this.config[0]);
         int right = (int)(left + w * this.config[2]);
         int bottom = (int)(top + h * this.config[3]);
 
@@ -94,7 +94,7 @@ public class ScanMarkingPoint {
             }
         }
 
-        for (int y=bottom - mh; y<top+mh; y++ ){
+        for (int y=top; y<top+mh; y++ ){
             for (int x=right - mw; x<right; x++ ){
                 Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
                 S += hsv[1];
@@ -103,7 +103,7 @@ public class ScanMarkingPoint {
             }
         }
 
-        for (int y=top; y<bottom; y++ ){
+        for (int y=bottom - mh; y<bottom; y++ ){
             for (int x=right - mw; x<right; x++ ){
                 Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
                 S += hsv[1];
@@ -115,7 +115,7 @@ public class ScanMarkingPoint {
         S = S/n;
         V = V/n;
 
-        if (S > 0.3 && V > 0.7) {
+        if (S > 0.25 && V > 0.75) {
             return true;
         } else {
             return false;
