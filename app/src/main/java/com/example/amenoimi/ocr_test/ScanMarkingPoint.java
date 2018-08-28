@@ -18,7 +18,7 @@ public class ScanMarkingPoint {
 
     ScanMarkingPoint() {
         // 距離左 距離上 範圍寬 範圍高 小正方形長寬(依照寬度比例)
-        this.config = new float[] {0.25f, 0.25f, 0.5f, 0.5f, 0.1f};
+        this.config = new float[] {0.25f, 0.25f, 0.54f, 0.3f, 0.05f};
 
         this.p = new Paint();
     }
@@ -57,9 +57,9 @@ public class ScanMarkingPoint {
         ScreenTarget.drawRect(right - mw, bottom - mh, right, bottom, p);
     }
 
-    public boolean findrect(Bitmap ScanTarget, int[] scale_error) {
-        int w = ScanTarget.getWidth() * scale_error[0];
-        int h = ScanTarget.getHeight() * scale_error[1];
+    public boolean findrect(Bitmap ScanTarget, Double[] scale_error) {
+        int w = ScanTarget.getWidth() ;
+        int h = ScanTarget.getHeight();
 
         int mw = (int)(w * this.config[4]);
         int mh = mw;

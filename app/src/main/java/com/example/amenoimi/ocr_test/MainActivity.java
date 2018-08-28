@@ -154,6 +154,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
     public com.cv4j.core.datamodel.Rect[] rerect=null;
 
+    public ScanMarkingPoint mp;
+
+
 
     public static String[] resizeArray(String[] arrayToResize, int size) {
         // create a new array twice the size
@@ -163,6 +166,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 newArray, 0, arrayToResize.length);
         return newArray;
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -248,6 +252,10 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        mp=new ScanMarkingPoint();
+
+
     }
 
 
@@ -458,58 +466,62 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 //                    }
 
 
+//                    surfaceDrawing(mSurfaceView2.getHolder(), rect.br().x*1.5, rect.tl().y*1.36770833333, rect.tl().x*1.5, rect.br().y*1.36770833333);
+//                    new_bitmap=Crop_Bitmap(new_bitmap,100,100);
 
 
+                    surfaceDrawing(mSurfaceView2.getHolder(), 1*1.5, 1*1.36770833333, new_bitmap.getWidth()*1.5, new_bitmap.getHeight()*1.36770833333);
+                    Log.d("QWQ", "onImageAvailable: " + mp.findrect(new_bitmap,new Double[]{1.5,1.36770833333}));
 
 
-
-                    CV4JImage cv4JImage = new CV4JImage(convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100));
-                    ImageProcessor img= cv4JImage.getProcessor();
-
-                    Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
-                    Log.d("GAN", String.valueOf(mSurfaceView2.getHeight()));
-
-                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 1);
-                    Log.d("OUO(GAN((x", String.valueOf(rect.x));
-                    Log.d("OUO(GAN((y", String.valueOf(rect.y));
-                    Log.d("OUO(GAN((w", String.valueOf(rect.width));
-                    Log.d("OUO(GAN((h", String.valueOf(rect.height));
-                    surfaceDrawing(mSurfaceView2.getHolder(), rect.br().x*1.5, rect.tl().y*1.36770833333, rect.tl().x*1.5, rect.br().y*1.36770833333);
-                    Log.d("OUO(GAN((tx", String.valueOf(rect.tl().x));
-                    Log.d("OUO(GAN((ty", String.valueOf(rect.tl().y));
-                    Log.d("OUO(GAN((tw", String.valueOf(rect.br().x));
-                    Log.d("OUO(GAN((th", String.valueOf(rect.br().y));
-                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0&&rect.br().x<new_bitmap.getWidth()&&rect.br().y<new_bitmap.getHeight()&&Math.abs( rect.width)>100&&Math.abs( rect.height)>100&&rect.br().x+rect.tl().x<new_bitmap.getWidth()) {
-
-                        new_bitmap = Crop_Bitmap_rect(new_bitmap, (rect.br().x), rect.tl().y,rect.tl().x,rect.br().y);//這個地方怪怪的
-                        new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100);
-
-//                        if(rerect!=null){
-//                            if(rerect.length>2){
-//                                for(int i=0;i<rerect.length;i++)
-//                                    Log.d("rerect["+i+"]","h"+ String.valueOf(rerect[i].height)+"w"+ String.valueOf(rerect[i].width)+"x"+String.valueOf(rerect[i].x)+"y"+String.valueOf(rerect[i].y));
-//                                if(rerect[0].height>rerect[1].height||rerect[0].height>rerect[2].height){//上面近
-//                                    new_bitmap=skewImage(new_bitmap,0.03,0.03);
-//                                }
-//                                if(rerect[1].height>rerect[0].height||rerect[1].height>rerect[2].height){//左下面近
-//                                    new_bitmap=skewImage(new_bitmap,-0.03,-0.03);
-//                                }
-//                                if(rerect[2].height>rerect[1].height||rerect[2].height>rerect[0].height){//右下面近
-//                                    new_bitmap=skewImage(new_bitmap,0.03,-0.03);
-//                                }
 //
-//                            }
-//                        }
-
-                        mSurfaceView.setVisibility(View.GONE);
-                        imgSrc.setVisibility(View.VISIBLE);
-                        imgSrc.setImageBitmap(new_bitmap);
-                        Log.d("QQ", "C");
-                        surfaceDrawing(mSurfaceView2.getHolder(), 0.0, 0.0, 0.0, 0.0);
-                        QR_code_bool=true;
-                        f=false;
-                        b4.setBackgroundResource(R.drawable.unsee);
-                    }
+//                    CV4JImage cv4JImage = new CV4JImage(convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100));
+//                    ImageProcessor img= cv4JImage.getProcessor();
+//
+//                    Log.d("GAN", String.valueOf(mSurfaceView2.getWidth()));
+//                    Log.d("GAN", String.valueOf(mSurfaceView2.getHeight()));
+//
+//                    com.cv4j.core.datamodel.Rect rect =findQRCodeBounding(img, 1, 1);
+//                    Log.d("OUO(GAN((x", String.valueOf(rect.x));
+//                    Log.d("OUO(GAN((y", String.valueOf(rect.y));
+//                    Log.d("OUO(GAN((w", String.valueOf(rect.width));
+//                    Log.d("OUO(GAN((h", String.valueOf(rect.height));
+//                    surfaceDrawing(mSurfaceView2.getHolder(), rect.br().x*1.5, rect.tl().y*1.36770833333, rect.tl().x*1.5, rect.br().y*1.36770833333);
+//                    Log.d("OUO(GAN((tx", String.valueOf(rect.tl().x));
+//                    Log.d("OUO(GAN((ty", String.valueOf(rect.tl().y));
+//                    Log.d("OUO(GAN((tw", String.valueOf(rect.br().x));
+//                    Log.d("OUO(GAN((th", String.valueOf(rect.br().y));
+//                    if(rect.tl().x>0&&rect.tl().y>0&&rect.br().x>0&&rect.br().y>0&&rect.br().x<new_bitmap.getWidth()&&rect.br().y<new_bitmap.getHeight()&&Math.abs( rect.width)>100&&Math.abs( rect.height)>100&&rect.br().x+rect.tl().x<new_bitmap.getWidth()) {
+//
+//                        new_bitmap = Crop_Bitmap_rect(new_bitmap, (rect.br().x), rect.tl().y,rect.tl().x,rect.br().y);//這個地方怪怪的
+//                        new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100);
+//
+////                        if(rerect!=null){
+////                            if(rerect.length>2){
+////                                for(int i=0;i<rerect.length;i++)
+////                                    Log.d("rerect["+i+"]","h"+ String.valueOf(rerect[i].height)+"w"+ String.valueOf(rerect[i].width)+"x"+String.valueOf(rerect[i].x)+"y"+String.valueOf(rerect[i].y));
+////                                if(rerect[0].height>rerect[1].height||rerect[0].height>rerect[2].height){//上面近
+////                                    new_bitmap=skewImage(new_bitmap,0.03,0.03);
+////                                }
+////                                if(rerect[1].height>rerect[0].height||rerect[1].height>rerect[2].height){//左下面近
+////                                    new_bitmap=skewImage(new_bitmap,-0.03,-0.03);
+////                                }
+////                                if(rerect[2].height>rerect[1].height||rerect[2].height>rerect[0].height){//右下面近
+////                                    new_bitmap=skewImage(new_bitmap,0.03,-0.03);
+////                                }
+////
+////                            }
+////                        }
+//
+//                        mSurfaceView.setVisibility(View.GONE);
+//                        imgSrc.setVisibility(View.VISIBLE);
+//                        imgSrc.setImageBitmap(new_bitmap);
+//                        Log.d("QQ", "C");
+//                        surfaceDrawing(mSurfaceView2.getHolder(), 0.0, 0.0, 0.0, 0.0);
+//                        QR_code_bool=true;
+//                        f=false;
+//                        b4.setBackgroundResource(R.drawable.unsee);
+//                    }
 
                     image.close();
                 }
@@ -695,8 +707,9 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     }
                     Message msg = mHandler.obtainMessage();
                     msg.obj = null;
-                    //                            msg.what = 1;
-                    msg.obj = get_View(new_bitmap); // Put the string into Message, into "obj" field.
+                    //  msg.what = 1;
+
+                    msg.obj = get_View(convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100)); // Put the string into Message, into "obj" field.
                     while (msg.obj == null) {
 
                     }
@@ -1401,6 +1414,8 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //清楚掉上一次的画框。
             Rect r = new Rect(  L.intValue(),T.intValue(),R.intValue(),B.intValue());
             canvas.drawRect(r, mpaint);
+
+            mp.drawing(canvas);
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
     }
