@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 /**
  * Created by midori on 2018/8/28.
@@ -174,6 +175,136 @@ public class ScanMarkingPoint {
         /*/// 確認在白紙 END
 
         if (ok == 1) {
+            return new int[] {
+                    left + mw,
+                    top + mh,
+                    right - mw,
+                    bottom - mh
+            };
+        }
+        else {
+            return new int[] {};
+        }
+
+    }
+
+    public int[] findrect2(Bitmap ScanTarget, Double[] scale_error) {
+        int ok = 0;
+        int w = ScanTarget.getWidth();
+        int h = ScanTarget.getHeight();
+
+        int mw = (int)(w * this.config[4]);
+        int mh = mw;
+
+        int left = (int)(w * this.config[0]);
+        int top = (int)(h * this.config[0]);
+        int right = (int)(left + w * this.config[2]);
+        int bottom = (int)(top + h * this.config[3]);
+
+        float S = 0, V = 0;
+        float pointS = 0, pointV = 0;
+        float bkS = 0, bkV = 0;
+        int n = 0;
+        float[] hsv = new float[3];
+
+        // 找定位點
+        for (int y=top; y<top+mh; y++ ){
+            for (int x=left; x<left+mw; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        for (int y=bottom - mh; y<bottom; y++ ){
+            for (int x=left; x<left+mw; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        for (int y=top; y<top+mh; y++ ){
+            for (int x=right - mw; x<right; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        for (int y=bottom - mh; y<bottom; y++ ){
+            for (int x=right - mw; x<right; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        S = S/n;
+        V = V/n;
+        pointS = S;
+        pointV = V;
+
+        if (S > 0.3 || V < 0.3) ok+=1;
+        // 找定位點 END
+
+        // 確認在白紙
+        S = 0;
+        V = 0;
+        n = 0;
+
+        for (int y=top+mh; y<bottom - mh; y++ ){
+            for (int x=left; x<left+mw; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        for (int y=top; y<top+mh; y++ ){
+            for (int x=left+mw; x<right - mw; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        for (int y=bottom - mh; y<bottom; y++ ){
+            for (int x=left+mw; x<right - mw; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        for (int y=top+mh; y<bottom - mh; y++ ){
+            for (int x=right - mw; x<right; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        S = S/n;
+        V = V/n;
+        bkS = S;
+        bkV = V;
+
+        if (S < 0.10 && V > 0.50) ok+=1;
+        // 確認在白紙 END
+
+        Log.d("FR", "OK: " + ok);
+        Log.d("FR", "pointSV: " + pointS + " ," + pointV);
+        Log.d("FR", "bkSV: " + bkS + " ," + bkV);
+        if ( (pointS - bkS > 0.3) && (ok == 2) ) {
             return new int[] {
                     left + mw,
                     top + mh,
