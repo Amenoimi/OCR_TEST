@@ -248,7 +248,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/chi_sim.traineddata")) mymodeDownload("chi_sim.traineddata");
             if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/eng.traineddata")) mymodeDownload("eng.traineddata");
             if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/img.traineddata")) mymodeDownload("img.traineddata");
-            if(!fileIsExists(getDataDir(getApplicationContext())+"/tessdata/QR.traineddata")) mymodeDownload("QR.traineddata");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -791,7 +790,6 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
             mymodeDownload("chi_sim.traineddata");
             mymodeDownload("eng.traineddata");
             mymodeDownload("img.traineddata");
-            mymodeDownload("QR.traineddata");
         } catch (Exception e) {
             e.printStackTrace();
         }

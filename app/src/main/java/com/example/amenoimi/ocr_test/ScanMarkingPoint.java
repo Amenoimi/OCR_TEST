@@ -121,7 +121,7 @@ public class ScanMarkingPoint {
         S = S/n;
         V = V/n;
 
-        if (S > 0.25 && V < 0.75) {
+        if (S > 0.20 && V < 0.80) {
             return true;
         } else {
             return false;
