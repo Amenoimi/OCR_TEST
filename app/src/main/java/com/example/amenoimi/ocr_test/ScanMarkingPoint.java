@@ -22,11 +22,17 @@ public class ScanMarkingPoint {
 
         this.p = new Paint();
     }
+    ScanMarkingPoint(float[] config) {
+        // 距離左 距離上 範圍寬 範圍高 小正方形長寬(依照寬度比例)
+        this.config = config;
+
+        this.p = new Paint();
+    }
     ScanMarkingPoint(Canvas ScreenTarget, Bitmap ScanTarget, int[] config) {
         this.ScreenTarget = ScreenTarget;
         this.ScanTarget = ScanTarget;
 
-        // 距離上 距離下 範圍長 範圍寬 小正方形長寬(依照寬度比例)
+        // 距離左 距離上 範圍寬 範圍高 小正方形長寬(依照寬度比例)
         this.config = new float[] {0.25f, 0.25f, 0.5f, 0.5f, 0.1f};
 
         this.p = new Paint();
@@ -58,7 +64,7 @@ public class ScanMarkingPoint {
     }
 
     public boolean findrect(Bitmap ScanTarget, Double[] scale_error) {
-        int w = ScanTarget.getWidth() ;
+        int w = ScanTarget.getWidth();
         int h = ScanTarget.getHeight();
 
         int mw = (int)(w * this.config[4]);
@@ -69,8 +75,8 @@ public class ScanMarkingPoint {
         int right = (int)(left + w * this.config[2]);
         int bottom = (int)(top + h * this.config[3]);
 
-        int[] pixels = new int[w * h];
-        ScanTarget.getPixels(pixels, 0, w, 0, 0, w, h);
+        //int[] pixels = new int[w * h];
+        //ScanTarget.getPixels(pixels, 0, w, 0, 0, w, h);
 
         float S = 0, V = 0;
         int n = 0;
@@ -115,7 +121,7 @@ public class ScanMarkingPoint {
         S = S/n;
         V = V/n;
 
-        if (S > 0.25 && V > 0.75) {
+        if (S > 0.25 && V < 0.75) {
             return true;
         } else {
             return false;
