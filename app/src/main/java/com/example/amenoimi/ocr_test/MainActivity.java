@@ -472,7 +472,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                     surfaceDrawing(mSurfaceView2.getHolder(), 1*1.5, 1*1.36770833333, new_bitmap.getWidth()*1.5, new_bitmap.getHeight()*1.36770833333);
                     Log.d("QWQ", "onImageAvailable: " + myrect.length);
                     if(myrect.length>0&& areWeFocused){
-                        new_bitmap=Crop_Bitmap_rect(new_bitmap,(int)(myrect[0]/1.5),(int)(myrect[1]/1.36770833333),(int)(myrect[2]/1.5),(int) (myrect[3]/1.36770833333));
+                        new_bitmap=Crop_Bitmap_rect(new_bitmap,myrect[0],myrect[1],myrect[2],myrect[3]);
                         mSurfaceView.setVisibility(View.GONE);
                         imgSrc.setVisibility(View.VISIBLE);
                         imgSrc.setImageBitmap(new_bitmap);
