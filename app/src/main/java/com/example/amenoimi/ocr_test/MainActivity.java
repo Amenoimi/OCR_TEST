@@ -383,19 +383,19 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         mImageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() { //可以在这里处理拍照得到的临时照片 例如，写入本地
             @Override
             public void onImageAvailable(ImageReader reader) {
-
+                Matrix matrix  = new Matrix();
+                matrix.setRotate(90);
                 // 拿到拍照照片数据
                 Image image = reader.acquireNextImage();
                 ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                 byte[] bytes = new byte[buffer.remaining()];
                 buffer.get(bytes);//由缓冲区存入字节数组
-                final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                final Bitmap bitmap = Bitmap.createBitmap(BitmapFactory.decodeByteArray(bytes, 0, bytes.length),0,0,BitmapFactory.decodeByteArray(bytes, 0, bytes.length).getWidth(),BitmapFactory.decodeByteArray(bytes, 0, bytes.length).getHeight(),matrix,true);
 //                QR_code_bool=false;
                 if (bitmap != null &&QR_code_bool==false) {
 
-                    Matrix matrix  = new Matrix();
-                    matrix.setRotate(90);
-                    new_bitmap = Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
+
+                    new_bitmap =bitmap;
                     Log.d("GAN", String.valueOf(new_bitmap.getWidth()));
                     Log.d("GAN", String.valueOf(new_bitmap.getHeight()));
 
