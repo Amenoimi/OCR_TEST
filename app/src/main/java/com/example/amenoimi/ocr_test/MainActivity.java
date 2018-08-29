@@ -395,7 +395,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 if (bitmap != null &&QR_code_bool==false) {
 
 
-                    new_bitmap = convertToBMW(bitmap,bitmap.getWidth(),bitmap.getHeight(),100);
+                    new_bitmap =bitmap;// convertToBMW(bitmap,bitmap.getWidth(),bitmap.getHeight(),100);
                     Log.d("GAN", String.valueOf(new_bitmap.getWidth()));
                     Log.d("GAN", String.valueOf(new_bitmap.getHeight()));
 
@@ -468,10 +468,19 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 //                    surfaceDrawing(mSurfaceView2.getHolder(), rect.br().x*1.5, rect.tl().y*1.36770833333, rect.tl().x*1.5, rect.br().y*1.36770833333);
 //                    new_bitmap=Crop_Bitmap(new_bitmap,100,100);
 
-
+                    int[] myrect =mp.findrect(new_bitmap,new Double[]{1.5,1.36770833333});
                     surfaceDrawing(mSurfaceView2.getHolder(), 1*1.5, 1*1.36770833333, new_bitmap.getWidth()*1.5, new_bitmap.getHeight()*1.36770833333);
-                    Log.d("QWQ", "onImageAvailable: " + mp.findrect(new_bitmap,new Double[]{1.5,1.36770833333}));
-
+                    Log.d("QWQ", "onImageAvailable: " + myrect.length);
+                    if(myrect.length>0&& areWeFocused){
+                        new_bitmap=Crop_Bitmap_rect(new_bitmap,(int)(myrect[0]/1.5),(int)(myrect[1]/1.36770833333),(int)(myrect[2]/1.5),(int) (myrect[3]/1.36770833333));
+                        mSurfaceView.setVisibility(View.GONE);
+                        imgSrc.setVisibility(View.VISIBLE);
+                        imgSrc.setImageBitmap(new_bitmap);
+                        Log.d("QQ", "C");
+                        QR_code_bool=true;
+                        f=false;
+                        b4.setBackgroundResource(R.drawable.unsee);
+                    }
 
 //
 //                    CV4JImage cv4JImage = new CV4JImage(convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100));
