@@ -63,7 +63,7 @@ public class ScanMarkingPoint {
         ScreenTarget.drawRect(right - mw, bottom - mh, right, bottom, p);
     }
 
-    public boolean findrect(Bitmap ScanTarget, Double[] scale_error) {
+    public int[] findrect(Bitmap ScanTarget, Double[] scale_error) {
         int ok = 0;
         int w = ScanTarget.getWidth();
         int h = ScanTarget.getHeight();
@@ -173,8 +173,17 @@ public class ScanMarkingPoint {
         if (S < 0.50 && V > 0.50) ok+=1;
         /*/// 確認在白紙 END
 
-        if (ok == 1) return true;
-        else return false;
+        if (ok == 1) {
+            return new int[] {
+                    left + mw,
+                    top + mh,
+                    right - mw - left - mw,
+                    bottom - mh - top - mh
+            };
+        }
+        else {
+            return new int[] {};
+        }
 
     }
 }
