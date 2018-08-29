@@ -177,8 +177,8 @@ public class ScanMarkingPoint {
             return new int[] {
                     left + mw,
                     top + mh,
-                    right - mw - left - mw,
-                    bottom - mh - top - mh
+                    right - mw,
+                    bottom - mh
             };
         }
         else {
