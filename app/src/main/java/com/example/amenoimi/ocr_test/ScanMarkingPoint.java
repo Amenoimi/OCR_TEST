@@ -64,6 +64,7 @@ public class ScanMarkingPoint {
     }
 
     public boolean findrect(Bitmap ScanTarget, Double[] scale_error) {
+        int ok = 0;
         int w = ScanTarget.getWidth();
         int h = ScanTarget.getHeight();
 
@@ -82,6 +83,7 @@ public class ScanMarkingPoint {
         int n = 0;
         float[] hsv = new float[3];
 
+        // 找定位點
         for (int y=top; y<top+mh; y++ ){
             for (int x=left; x<left+mw; x++ ){
                 Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
@@ -121,11 +123,58 @@ public class ScanMarkingPoint {
         S = S/n;
         V = V/n;
 
-        if (S > 0.25 && V < 0.75) {
-            return true;
-        } else {
-            return false;
+        if (S > 0.20 && V < 0.70) ok+=1;
+        // 找定位點 END
+
+        // 確認在白紙
+        S = 0;
+        V = 0;
+        n = 0;
+
+        for (int y=top+mh; y<bottom - mh; y++ ){
+            for (int x=left; x<left+mw; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
         }
+
+        for (int y=top; y<top+mh; y++ ){
+            for (int x=left+mw; x<right - mw; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        for (int y=bottom - mh; y<bottom; y++ ){
+            for (int x=left+mw; x<right - mw; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        for (int y=top+mh; y<bottom - mh; y++ ){
+            for (int x=right - mw; x<right; x++ ){
+                Color.colorToHSV(ScanTarget.getPixel(x, y), hsv);
+                S += hsv[1];
+                V += hsv[2];
+                n++;
+            }
+        }
+
+        S = S/n;
+        V = V/n;
+
+        if (S < 0.20 && V > 0.70) ok+=1;
+        // 確認在白紙 END
+
+        if (ok == 2) return true;
+        else return false;
 
     }
 }
