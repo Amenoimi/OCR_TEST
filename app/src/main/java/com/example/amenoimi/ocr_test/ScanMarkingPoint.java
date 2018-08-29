@@ -126,7 +126,7 @@ public class ScanMarkingPoint {
         if (S > 0.20 && V < 0.70) ok+=1;
         // 找定位點 END
 
-        // 確認在白紙
+        /*/// 確認在白紙
         S = 0;
         V = 0;
         n = 0;
@@ -170,10 +170,10 @@ public class ScanMarkingPoint {
         S = S/n;
         V = V/n;
 
-        if (S < 0.20 && V > 0.70) ok+=1;
-        // 確認在白紙 END
+        if (S < 0.50 && V > 0.50) ok+=1;
+        /*/// 確認在白紙 END
 
-        if (ok == 2) return true;
+        if (ok == 1) return true;
         else return false;
 
     }

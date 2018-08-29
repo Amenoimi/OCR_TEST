@@ -395,7 +395,7 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                 if (bitmap != null &&QR_code_bool==false) {
 
 
-                    new_bitmap =bitmap;
+                    new_bitmap = convertToBMW(bitmap,bitmap.getWidth(),bitmap.getHeight(),100);
                     Log.d("GAN", String.valueOf(new_bitmap.getWidth()));
                     Log.d("GAN", String.valueOf(new_bitmap.getHeight()));
 
