@@ -123,7 +123,7 @@ public class ScanMarkingPoint {
         if (ok == 1) {
             return new int[] {
                     left + mw,
-                    top - mh,
+                    top + mh,
                     right - mw,
                     bottom - mh
             };
@@ -196,7 +196,7 @@ public class ScanMarkingPoint {
         pointS = S;
         pointV = V;
 
-        if (S > 0.3 || V < 0.3) ok+=1;
+        if (S > 0.3) ok+=1;
         // 找定位點 END
 
         // 確認在白紙
@@ -245,7 +245,7 @@ public class ScanMarkingPoint {
         bkS = S;
         bkV = V;
 
-        if (S < 0.10 && V > 0.50) ok+=1;
+        if (S < 0.1) ok+=1;
         // 確認在白紙 END
 
         Log.d("FR", "OK: " + ok);
@@ -254,7 +254,7 @@ public class ScanMarkingPoint {
         if ( (pointS - bkS > 0.3) && (ok == 2) ) {
             return new int[] {
                     left + mw,
-                    top - mh,
+                    top + mh,
                     right - mw,
                     bottom - mh
             };
@@ -385,7 +385,7 @@ public class ScanMarkingPoint {
         if ( ok == 2 ) {
             return new int[] {
                     left + mw,
-                    top - mh,
+                    top + mh,
                     right - mw,
                     bottom - mh
             };
