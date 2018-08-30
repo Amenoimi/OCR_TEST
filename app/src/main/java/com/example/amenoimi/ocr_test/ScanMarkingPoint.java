@@ -68,7 +68,7 @@ public class ScanMarkingPoint {
         int mh = mw;
 
         int left = (int)(w * this.config[0]);
-        int top = (int)(h * this.config[0]);
+        int top = (int)(h * this.config[1]);
         int right = (int)(left + w * this.config[2]);
         int bottom = (int)(top + h * this.config[3]);
 
@@ -144,7 +144,7 @@ public class ScanMarkingPoint {
         int mh = mw;
 
         int left = (int)(w * this.config[0]);
-        int top = (int)(h * this.config[0]);
+        int top = (int)(h * this.config[1]);
         int right = (int)(left + w * this.config[2]);
         int bottom = (int)(top + h * this.config[3]);
 
@@ -275,7 +275,7 @@ public class ScanMarkingPoint {
         int mh = mw;
 
         int left = (int)(w * this.config[0]);
-        int top = (int)(h * this.config[0]);
+        int top = (int)(h * this.config[1]);
         int right = (int)(left + w * this.config[2]);
         int bottom = (int)(top + h * this.config[3]);
 
