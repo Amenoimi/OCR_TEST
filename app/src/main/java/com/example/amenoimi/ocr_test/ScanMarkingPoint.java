@@ -10,8 +10,9 @@ import android.util.Log;
  * Created by EienYuki on 2018/8/28.
  * 說明：這是一個簡單的掃描四邊正方形定位點的程式
  *
- *
- *
+ * Step1. 設定 Config 關係到定位點的呈現
+ * Step2. 呼叫 drawing 繪製定位點
+ * Step3. 呼叫 findrect 判斷有沒有找到定位點 ps:目前測試第三個可以使用
  */
 
 public class ScanMarkingPoint {
@@ -21,26 +22,29 @@ public class ScanMarkingPoint {
     private Paint p;
 
     ScanMarkingPoint() {
-        // 以下參數都是百分比
-        // 距離左(x), 距離上(y), 範圍寬(width), 範圍高(height), 小正方形長寬[依照寬度比例](square)
         this.Config = new float[] {0.25f, 0.25f, 0.54f, 0.3f, 0.05f};
 
         this.p = new Paint();
     }
+
     ScanMarkingPoint(float[] Config) {
         this.Config = Config;
 
         this.p = new Paint();
     }
 
+    // 關係到 定位點的呈現 設定值都是百分比
+    // 距離左(x), 距離上(y), 範圍寬(width), 範圍高(height), 小正方形長寬[依照寬度比例](square)
     public void setConfig(float left, float top, float width, float height, float square) {
         this.Config = new float[]{left, top, width, height, square};
     }
+
+    // 用於偏移 findrect 輸出的座標
     public void setBias(float left, float top) {
         this.Bias = new float[]{left, top};
     }
 
-    // 繪製邊框
+    // 繪製邊框、正方形定位點 於畫布上
     public void drawing(Canvas ScreenTarget) {
         int w = ScreenTarget.getWidth();
         int h = ScreenTarget.getHeight();
@@ -66,8 +70,7 @@ public class ScanMarkingPoint {
         ScreenTarget.drawRect(right - mw, bottom - mh, right, bottom, p);
     }
 
-    // 識別邊框
-    // for 一般情況
+    // 識別 正方形定位點 - 只找尋定位點的版本
     public int[] findrect(Bitmap ScanTarget) {
         int ok = 0;
         int w = ScanTarget.getWidth();
@@ -143,7 +146,7 @@ public class ScanMarkingPoint {
 
     }
 
-    // for 一般情況
+    // 識別 正方形定位點 - 找尋定位點、確認再白紙上 的版本
     public int[] findrect2(Bitmap ScanTarget) {
         int ok = 0;
         int w = ScanTarget.getWidth();
@@ -274,7 +277,7 @@ public class ScanMarkingPoint {
 
     }
 
-    // for 二值化
+    // 識別 正方形定位點 - 找尋定位點、確認再白紙上 的版本 (來源爲 二值化 的 Bitmap)
     public int[] findrect3(Bitmap ScanTarget) {
         int ok = 0;
         int w = ScanTarget.getWidth();
