@@ -464,11 +464,13 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 //                        QR_code_bool = false;
 //                    }
 
-
+                    mp.setBias(0, 3);
 //                    surfaceDrawing(mSurfaceView2.getHolder(), rect.br().x*1.5, rect.tl().y*1.36770833333, rect.tl().x*1.5, rect.br().y*1.36770833333);
 //                    new_bitmap=Crop_Bitmap(new_bitmap,100,100);
                     new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100);
-                    int[] myrect =mp.findrect3(new_bitmap,new Double[]{1.5,1.36770833333});
+                    int[] myrect =mp.findrect3(new_bitmap);
+
+
                     surfaceDrawing(mSurfaceView2.getHolder(), 1*1.5, 1*1.36770833333, new_bitmap.getWidth()*1.5, new_bitmap.getHeight()*1.36770833333);
                     Log.d("QWQ", "onImageAvailable: " + myrect.length);
                     if(myrect.length>0&& areWeFocused&&Focus_distance>3){
