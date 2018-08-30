@@ -7,7 +7,8 @@ import android.graphics.Paint;
 import android.util.Log;
 
 /**
- * Created by midori on 2018/8/28.
+ * Created by EienYuki on 2018/8/28.
+ * 說明：這是一個簡單的掃描四邊正方形定位點的程式
  */
 
 public class ScanMarkingPoint {
@@ -16,13 +17,15 @@ public class ScanMarkingPoint {
     private Paint p;
 
     ScanMarkingPoint() {
-        // 距離左 距離上 範圍寬 範圍高 小正方形長寬(依照寬度比例)
+        // 以下參數都是百分比
+        // 距離左, 距離上, 範圍寬, 範圍高, 小正方形長寬(依照寬度比例)
         this.config = new float[] {0.25f, 0.25f, 0.54f, 0.3f, 0.05f};
 
         this.p = new Paint();
     }
     ScanMarkingPoint(float[] config) {
-        // 距離左 距離上 範圍寬 範圍高 小正方形長寬(依照寬度比例)
+        // 以下參數都是百分比
+        // 距離左, 距離上, 範圍寬, 範圍高, 小正方形長寬(依照寬度比例)
         this.config = config;
 
         this.p = new Paint();
@@ -120,7 +123,7 @@ public class ScanMarkingPoint {
         if (ok == 1) {
             return new int[] {
                     left + mw,
-                    top + mh,
+                    top - mh,
                     right - mw,
                     bottom - mh
             };
@@ -251,7 +254,7 @@ public class ScanMarkingPoint {
         if ( (pointS - bkS > 0.3) && (ok == 2) ) {
             return new int[] {
                     left + mw,
-                    top + mh,
+                    top - mh,
                     right - mw,
                     bottom - mh
             };
@@ -382,7 +385,7 @@ public class ScanMarkingPoint {
         if ( ok == 2 ) {
             return new int[] {
                     left + mw,
-                    top + mh,
+                    top - mh,
                     right - mw,
                     bottom - mh
             };
