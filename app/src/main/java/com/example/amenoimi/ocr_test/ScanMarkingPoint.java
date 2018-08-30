@@ -40,7 +40,7 @@ public class ScanMarkingPoint {
         int mh = mw;
 
         float left = w * this.config[0];
-        float top = h * this.config[0];
+        float top = h * this.config[1];
         float right = left + w * this.config[2];
         float bottom = top + h * this.config[3];
 
@@ -55,6 +55,47 @@ public class ScanMarkingPoint {
         ScreenTarget.drawRect(left, bottom - mh, left+mw, bottom, p);
         ScreenTarget.drawRect(right - mw, top, right, top+mh, p);
         ScreenTarget.drawRect(right - mw, bottom - mh, right, bottom, p);
+    }
+
+    // 繪製邊框和實際截圖位置
+    public void findrect_correction(Canvas ScreenTarget, Bitmap ScanTarget) {
+
+        // 顯示
+        int w = ScreenTarget.getWidth();
+        int h = ScreenTarget.getHeight();
+
+        int mw = (int)(w * this.config[4]);
+        int mh = mw;
+
+        float left = w * this.config[0];
+        float top = h * this.config[1];
+        float right = left + w * this.config[2];
+        float bottom = top + h * this.config[3];
+
+
+        p.setColor(Color.parseColor("#006ac6"));
+        p.setStyle(Paint.Style.STROKE);
+        ScreenTarget.drawRect(left, top, right, bottom, p);
+
+        p.setColor(Color.parseColor("#183292"));
+        p.setStyle(Paint.Style.FILL);//設置填滿
+        ScreenTarget.drawRect(left, top, left+mw, top+mh, p);
+        ScreenTarget.drawRect(left, bottom - mh, left+mw, bottom, p);
+        ScreenTarget.drawRect(right - mw, top, right, top+mh, p);
+        ScreenTarget.drawRect(right - mw, bottom - mh, right, bottom, p);
+
+        // 實際截圖
+        w = ScanTarget.getWidth();
+        h = ScanTarget.getHeight();
+
+        left = (int)(w * this.config[0]);
+        top = (int)(h * this.config[1]);
+        right = (int)(left + w * this.config[2]);
+        bottom = (int)(top + h * this.config[3]);
+
+        p.setColor(Color.parseColor("#db3b3b"));
+        p.setStyle(Paint.Style.STROKE);
+        ScreenTarget.drawRect(left, top, right, bottom, p);
     }
 
     // 識別邊框
@@ -251,7 +292,7 @@ public class ScanMarkingPoint {
         Log.d("FR", "OK: " + ok);
         Log.d("FR", "pointSV: " + pointS + " ," + pointV);
         Log.d("FR", "bkSV: " + bkS + " ," + bkV);
-        if ( (pointS - bkS > 0.3) && (ok == 2) ) {
+        if (ok == 2) {
             return new int[] {
                     left + mw,
                     top + mh,
@@ -382,7 +423,7 @@ public class ScanMarkingPoint {
         Log.d("FR", "OK: " + ok);
         Log.d("FR", "pointSV: " + pointS + " ," + pointV);
         Log.d("FR", "bkSV: " + bkS + " ," + bkV);
-        if ( ok == 2 ) {
+        if (ok == 2) {
             return new int[] {
                     left + mw,
                     top + mh,
