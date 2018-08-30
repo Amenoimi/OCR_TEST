@@ -25,7 +25,7 @@ import android.util.Log;
  *                |  ------------   -----   ---------/          |
  *       /       |             ||               ||
  *     /        /          // \\========= //\\
- *                    //                                    \\                              #我做了個假血小板
+ *                    //                                    \\                              #我做了個假血小板  by-Amenoimi
  */
 
 public class ScanMarkingPoint {
