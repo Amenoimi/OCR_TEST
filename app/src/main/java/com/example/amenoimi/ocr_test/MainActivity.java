@@ -467,12 +467,14 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 
 //                    surfaceDrawing(mSurfaceView2.getHolder(), rect.br().x*1.5, rect.tl().y*1.36770833333, rect.tl().x*1.5, rect.br().y*1.36770833333);
 //                    new_bitmap=Crop_Bitmap(new_bitmap,100,100);
-
-                    int[] myrect =mp.findrect(new_bitmap,new Double[]{1.5,1.36770833333});
+                    new_bitmap=convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100);
+                    int[] myrect =mp.findrect3(new_bitmap,new Double[]{1.5,1.36770833333});
                     surfaceDrawing(mSurfaceView2.getHolder(), 1*1.5, 1*1.36770833333, new_bitmap.getWidth()*1.5, new_bitmap.getHeight()*1.36770833333);
                     Log.d("QWQ", "onImageAvailable: " + myrect.length);
-                    if(myrect.length>0&& areWeFocused){
+                    if(myrect.length>0&& areWeFocused&&Focus_distance>3){
                         new_bitmap=Crop_Bitmap_rect(new_bitmap,myrect[0],myrect[1],myrect[2],myrect[3]);
+
+                        clear_canvas(mSurfaceView2.getHolder());
                         mSurfaceView.setVisibility(View.GONE);
                         imgSrc.setVisibility(View.VISIBLE);
                         imgSrc.setImageBitmap(new_bitmap);
@@ -1427,7 +1429,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
         }
     }
 
-
+public void clear_canvas(SurfaceHolder surfaceHolder){
+    Canvas canvas=new Canvas();
+    canvas =  surfaceHolder.lockCanvas();
+    canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR); //清楚掉上一次的画框。
+    surfaceHolder.unlockCanvasAndPost(canvas);
+}
 
     // 找框線  原圖, 框線大小相對於原圖的百分比 width, height
     public int [] find_box(Bitmap img, int box_width_proportion, int box_height_proportion) {
