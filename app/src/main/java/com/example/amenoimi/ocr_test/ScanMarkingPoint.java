@@ -12,7 +12,7 @@ import android.util.Log;
  *
  * Step1. 設定 Config 關係到定位點的呈現
  * Step2. 呼叫 drawing 繪製定位點
- * Step3. 呼叫 findrect 判斷有沒有找到定位點 ps:目前測試第三個可以使用
+ * Step3. 呼叫 findrect 判斷有沒有找到定位點 ps:這邊有三個版本 目前測試第三個可以使用 (findrect3)
  */
 
 public class ScanMarkingPoint {
