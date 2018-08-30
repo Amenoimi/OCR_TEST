@@ -12,37 +12,29 @@ import android.util.Log;
  */
 
 public class ScanMarkingPoint {
-    private float[] config;
-    private float[] drawing_bias = new float[] {1, 1};
+    private float[] Config;
+    private float[] Bias = new float[] {1, 1};
 
     private Paint p;
 
     ScanMarkingPoint() {
         // 以下參數都是百分比
-        // 距離左, 距離上, 範圍寬, 範圍高, 小正方形長寬(依照寬度比例)
-        this.config = new float[] {0.25f, 0.25f, 0.54f, 0.3f, 0.05f};
+        // 距離左(x), 距離上(y), 範圍寬(width), 範圍高(height), 小正方形長寬[依照寬度比例](square)
+        this.Config = new float[] {0.25f, 0.25f, 0.54f, 0.3f, 0.05f};
 
         this.p = new Paint();
     }
-    ScanMarkingPoint(float[] config) {
-        // 以下參數都是百分比
-        // 距離左, 距離上, 範圍寬, 範圍高, 小正方形長寬(依照寬度比例)
-        this.config = config;
+    ScanMarkingPoint(float[] Config) {
+        this.Config = Config;
 
         this.p = new Paint();
     }
 
-    public void setConfig(float[] config) {
-        this.config = config;
+    public void setConfig(float left, float top, float width, float height, float square) {
+        this.Config = new float[]{left, top, width, height, square};
     }
-    public void setDrawing_bias(float[] drawing_bias) {
-        this.drawing_bias = drawing_bias;
-    }
-
-    // 校正邊框和實際截圖位置偏差
-    public void correctionBias(Canvas ScreenTarget, Bitmap ScanTarget) {
-        this.drawing_bias[0] = ScreenTarget.getWidth() / ScanTarget.getWidth();
-        this.drawing_bias[1] = ScreenTarget.getHeight() / ScanTarget.getHeight();
+    public void setBias(float left, float top) {
+        this.Bias = new float[]{left, top};
     }
 
     // 繪製邊框
@@ -50,13 +42,13 @@ public class ScanMarkingPoint {
         int w = ScreenTarget.getWidth();
         int h = ScreenTarget.getHeight();
 
-        int mw = (int)(w * this.config[4]);
+        int mw = (int)(w * this.Config[4]);
         int mh = mw;
 
-        float left = w * this.config[0];
-        float top = h * this.config[1];
-        float right = left + w * this.config[2];
-        float bottom = top + h * this.config[3];
+        float left = w * this.Config[0];
+        float top = h * this.Config[1];
+        float right = left + w * this.Config[2];
+        float bottom = top + h * this.Config[3];
 
 
         p.setColor(Color.parseColor("#006ac6"));
@@ -78,13 +70,13 @@ public class ScanMarkingPoint {
         int w = ScanTarget.getWidth();
         int h = ScanTarget.getHeight();
 
-        int mw = (int)(w * this.config[4] * this.drawing_bias[0]);
+        int mw = (int)(w * this.Config[4]);
         int mh = mw;
 
-        int left = (int)(w * this.config[0] * this.drawing_bias[0]);
-        int top = (int)(h * this.config[1] * this.drawing_bias[1]);
-        int right = (int)(left + w * this.config[2] * this.drawing_bias[0]);
-        int bottom = (int)(top + h * this.config[3] * this.drawing_bias[1]);
+        int left = (int)(w * this.Config[0]);
+        int top = (int)(h * this.Config[1]);
+        int right = (int)(left + w * this.Config[2]);
+        int bottom = (int)(top + h * this.Config[3]);
 
 
         float S = 0, V = 0;
@@ -136,8 +128,8 @@ public class ScanMarkingPoint {
 
         if (ok == 1) {
             return new int[] {
-                    left + mw,
-                    top + mh,
+                    left + (int)(mw * this.Bias[0]),
+                    top + (int)(mh * this.Bias[1]),
                     right - mw,
                     bottom - mh
             };
@@ -154,13 +146,13 @@ public class ScanMarkingPoint {
         int w = ScanTarget.getWidth();
         int h = ScanTarget.getHeight();
 
-        int mw = (int)(w * this.config[4] * this.drawing_bias[0]);
+        int mw = (int)(w * this.Config[4]);
         int mh = mw;
 
-        int left = (int)(w * this.config[0] * this.drawing_bias[0]);
-        int top = (int)(h * this.config[1] * this.drawing_bias[1]);
-        int right = (int)(left + w * this.config[2] * this.drawing_bias[0]);
-        int bottom = (int)(top + h * this.config[3] * this.drawing_bias[1]);
+        int left = (int)(w * this.Config[0]);
+        int top = (int)(h * this.Config[1]);
+        int right = (int)(left + w * this.Config[2]);
+        int bottom = (int)(top + h * this.Config[3]);
 
         float S = 0, V = 0;
         float pointS = 0, pointV = 0;
@@ -267,8 +259,8 @@ public class ScanMarkingPoint {
         Log.d("FR", "bkSV: " + bkS + " ," + bkV);
         if (ok == 2) {
             return new int[] {
-                    left + mw,
-                    top + mh,
+                    left + (int)(mw * this.Bias[0]),
+                    top + (int)(mh * this.Bias[1]),
                     right - mw,
                     bottom - mh
             };
@@ -285,13 +277,13 @@ public class ScanMarkingPoint {
         int w = ScanTarget.getWidth();
         int h = ScanTarget.getHeight();
 
-        int mw = (int)(w * this.config[4] * this.drawing_bias[0]);
+        int mw = (int)(w * this.Config[4]);
         int mh = mw;
 
-        int left = (int)(w * this.config[0] * this.drawing_bias[0]);
-        int top = (int)(h * this.config[1] * this.drawing_bias[1]);
-        int right = (int)(left + w * this.config[2] * this.drawing_bias[0]);
-        int bottom = (int)(top + h * this.config[3] * this.drawing_bias[1]);
+        int left = (int)(w * this.Config[0]);
+        int top = (int)(h * this.Config[1]);
+        int right = (int)(left + w * this.Config[2]);
+        int bottom = (int)(top + h * this.Config[3]);
 
         float S = 0, V = 0;
         float pointS = 0, pointV = 0;
@@ -398,8 +390,8 @@ public class ScanMarkingPoint {
         Log.d("FR", "bkSV: " + bkS + " ," + bkV);
         if (ok == 2) {
             return new int[] {
-                    left + mw,
-                    top + mh,
+                    left + (int)(mw * this.Bias[0]),
+                    top + (int)(mh * this.Bias[1]),
                     right - mw,
                     bottom - mh
             };
