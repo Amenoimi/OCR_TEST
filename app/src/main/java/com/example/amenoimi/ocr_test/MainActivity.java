@@ -464,6 +464,12 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
 //                        QR_code_bool = false;
 //                    }
 
+
+
+
+
+
+
                     mp.setBias(0, 3);
 //                    surfaceDrawing(mSurfaceView2.getHolder(), rect.br().x*1.5, rect.tl().y*1.36770833333, rect.tl().x*1.5, rect.br().y*1.36770833333);
 //                    new_bitmap=Crop_Bitmap(new_bitmap,100,100);
@@ -479,12 +485,14 @@ public class MainActivity extends AppCompatActivity  implements View.OnClickList
                         clear_canvas(mSurfaceView2.getHolder());
                         mSurfaceView.setVisibility(View.GONE);
                         imgSrc.setVisibility(View.VISIBLE);
-                        imgSrc.setImageBitmap(new_bitmap);
+                        imgSrc.setImageBitmap(new text2rect(new_bitmap).img());
                         Log.d("QQ", "C");
                         QR_code_bool=true;
                         f=false;
                         b4.setBackgroundResource(R.drawable.unsee);
                     }
+
+
 
 //
 //                    CV4JImage cv4JImage = new CV4JImage(convertToBMW(new_bitmap,new_bitmap.getWidth(),new_bitmap.getHeight(),100));

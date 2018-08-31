@@ -339,7 +339,7 @@ public class ScanMarkingPoint {
         pointS = S;
         pointV = V;
 
-        if (V < 0.8) ok+=1;
+        if (V < 0.7) ok+=1;
         // 找定位點 END
 
         // 確認在白紙
